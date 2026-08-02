@@ -303,12 +303,6 @@
 
                         </td>
 
-<td class="p-4 text-center">
-
-                            {{ optional($document->submission_date)?->format('M d, Y') ?? '—' }}
-
-                        </td>
-
                         <td class="p-4 text-center">
                         <a
                             

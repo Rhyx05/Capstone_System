@@ -1,369 +1,314 @@
 <x-layouts.employee-layout>
 
-
+<div class="max-w-6xl mx-auto">
 
 @if(session('success'))
-<div class="mb-6 rounded-lg border border-green-300 bg-green-100 px-6 py-4 text-green-700">
-    {{ session('success') }}
-</div>
+    <div class="mb-6 flex items-start gap-3 rounded-xl border border-green-200 bg-green-50 px-5 py-4 text-green-800">
+        <span class="text-lg">✅</span>
+        <p class="text-sm text-green-700">{{ session('success') }}</p>
+    </div>
 @endif
 
-<div class="space-y-6">
-{{-- ========================================================= --}}
-{{-- PAGE HEADER --}}
-{{-- ========================================================= --}}
-
 @php
-
-$statusColor = match($document->status){
-
-    'assigned' => 'bg-blue-100 text-blue-700',
-
-    'processing' => 'bg-yellow-100 text-yellow-700',
-
-    'completed' => 'bg-green-100 text-green-700',
-
-    'rejected' => 'bg-red-100 text-red-700',
-
-    default => 'bg-gray-100 text-gray-700',
-
-};
-
+    $statusColor = match($document->status){
+        'assigned'   => 'bg-blue-50 text-blue-700 border-blue-200',
+        'processing' => 'bg-yellow-50 text-yellow-700 border-yellow-200',
+        'completed'  => 'bg-emerald-50 text-emerald-700 border-emerald-200',
+        'rejected'   => 'bg-red-50 text-red-700 border-red-200',
+        default      => 'bg-gray-100 text-gray-700 border-gray-200',
+    };
+    $priorityColors = [
+        'Low'    => 'bg-green-500',
+        'Normal' => 'bg-blue-500',
+        'High'   => 'bg-orange-500',
+        'Urgent' => 'bg-red-500',
+    ];
 @endphp
 
-<div class="grid grid-cols-3 items-center mb-8">
+    {{-- ================= Single Unified Card ================= --}}
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
 
-    {{-- Left --}}
-    <div>
+        {{-- ===================================================== --}}
+        {{-- HEADER --}}
+        {{-- ===================================================== --}}
+        <div class="relative overflow-hidden bg-gradient-to-r from-indigo-50 via-blue-50 to-white px-8 py-7">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
-        <h1 class="text-2xl font-bold text-gray-900">
+                <div class="flex items-center gap-4">
+                    <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white shadow-sm border border-indigo-100">
+                        <svg class="w-6 h-6 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-900">Process Document</h1>
+                        <p class="mt-0.5 text-sm text-gray-500">
+                            Tracking Code
+                            <span class="font-semibold text-indigo-700">{{ $document->tracking_code }}</span>
+                        </p>
+                    </div>
+                </div>
 
-            Process Document
+                <div class="flex justify-center">
 
-        </h1>
+                    <a
+                    
+                        href="{{ route('user.incoming') }}"
+                        class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 hover:border-indigo-200 hover:text-indigo-600 transition">
+                        <span>←</span> Back
+                    </a>
 
-        <p class="mt-1 text-gray-500">
-
-            Tracking Code
-
-            <span class="font-semibold text-blue-700">
-
-                {{ $document->tracking_code }}
-
-            </span>
-
-        </p>
-
-    </div>
-
-    {{-- Center --}}
-    <div class="flex justify-center">
-
-        <span class="px-5 py-2 rounded-full text-sm font-semibold {{ $statusColor }}">
-
-            {{ ucwords(str_replace('_',' ',$document->status)) }}
-
-        </span>
-
-    </div>
-
-    {{-- Right --}}
-    <div class="flex justify-end">
-
-        <a
-            href="{{ route('user.incoming') }}"
-            class="w-16 h-16 rounded-xl border border-gray-200 bg-white hover:bg-gray-100 hover:border-blue-300 hover:text-blue-600 flex flex-col items-center justify-center transition">
-
-            <span class="text-2xl">
-
-                ←
-
-            </span>
-
-            <span class="text-xs mt-1">
-
-                Back
-
-            </span>
-
-        </a>
-
-    </div>
-
-</div>
-{{-- ===================================================== --}}
-{{-- DOCUMENT DETAILS --}}
-{{-- ===================================================== --}}
-
-<div class="bg-white rounded-2xl border shadow-sm mb-6">
-
-    <div class="px-6 py-5 border-b">
-
-        <h2 class="text-xl font-bold">
-
-            Document Details
-
-        </h2>
-
-    </div>
-
-    <div class="p-5">
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-
-            {{-- Submitted By --}}
-            <div>
-
-                <p class="text-xs uppercase text-gray-500 tracking-wide">
-
-                    Submitted By
-
-                </p>
-
-                <p class="font-semibold mt-2">
-
-                    {{ optional($document->submittedBy)->full_name }}
-
-                </p>
+                </div>
 
             </div>
-
-            {{-- Title --}}
-            <div class="text-center">
-
-                <p class="text-xs uppercase text-gray-500 tracking-wide">
-
-                    Title
-
-                </p>
-
-                <p class="font-semibold mt-2">
-
-                    {{ $document->title }}
-
-                </p>
-
-            </div>
-
-            {{-- Submitted On --}}
-            <div>
-
-                <p class="text-xs uppercase text-gray-500 tracking-wide">
-
-                    Submitted On
-
-                </p>
-
-                <p class="font-semibold mt-2">
-
-                    {{ $document->submission_date->format('M d, Y h:i A') }}
-
-                </p>
-
-            </div>
-
-            {{-- Office --}}
-            <div>
-
-                <p class="text-xs uppercase text-gray-500 tracking-wide">
-
-                    Office
-
-                </p>
-
-                <p class="font-semibold mt-2">
-
-                    {{ optional($document->office)->office_name }}
-
-                </p>
-
-            </div>
-
-            {{-- Category --}}
-            <div class="text-center">
-
-                <p class="text-xs uppercase text-gray-500 tracking-wide">
-
-                    Category
-
-                </p>
-
-                <p class="font-semibold mt-2">
-
-                    {{ $document->category }}
-
-                </p>
-
-            </div>
-
-            {{-- Priority --}}
-            <div>
-
-                <p class="text-xs uppercase text-gray-500 tracking-wide">
-
-                    Priority
-
-                </p>
-
-                <span class="inline-flex mt-2 px-3 py-1 rounded-full
-
-                    @switch($document->priority)
-
-                        @case('Urgent')
-                            bg-red-100 text-red-700
-                            @break
-
-                        @case('High')
-                            bg-orange-100 text-orange-700
-                            @break
-
-                        @case('Normal')
-                            bg-blue-100 text-blue-700
-                            @break
-
-                        @default
-                            bg-gray-100 text-gray-700
-
-                    @endswitch">
-
-                    {{ $document->priority }}
-
-                </span>
-
-            </div>
-
         </div>
 
-    </div>
+        <div class="border-t border-gray-100"></div>
 
-</div>
+        {{-- ===================================================== --}}
+        {{-- DOCUMENT DETAILS --}}
+        {{-- ===================================================== --}}
+        <div class="px-8 py-6">
 
-{{-- ===================================================== --}}
-{{-- OCR + PROCESSING ACTIONS --}}
-{{-- ===================================================== --}}
-
-<div class="grid grid-cols-12 gap-6">
-
-    {{-- OCR TEXT --}}
-    <div class="col-span-12 xl:col-span-8">
-
-    @if(!Str::contains(strtolower($document->file_type), 'pdf'))
-
-    <div class="bg-white rounded-2xl border shadow-sm">
-
-        {{-- Header --}}
-        <div class="border-b px-6 py-5 flex items-center justify-between">
-
-            <h2 class="text-xl font-bold">
-
-                OCR Extracted Text
-
-            </h2>
-
-        </div>
-
-        {{-- OCR Text --}}
-        <div class="p-6">
-
-            <div class="rounded-xl border bg-gray-50 p-6 max-h-[700px] overflow-y-auto whitespace-pre-wrap text-sm leading-7">
-
-                {{ $document->extracted_text ?: 'No OCR text available.' }}
-
+            <div class="flex items-center gap-2 mb-5">
+                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-blue-50 text-blue-600 text-sm">📄</span>
+                <h2 class="text-base font-semibold text-gray-900">Document Details</h2>
             </div>
 
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+                <div>
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Submitted By</p>
+                    <p class="text-sm font-semibold text-gray-800">{{ optional($document->submittedBy)->full_name }}</p>
+                </div>
+
+                <div>
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Title</p>
+                    <p class="text-sm font-semibold text-gray-800">{{ $document->title }}</p>
+                </div>
+
+                <div>
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Submitted On</p>
+                    <p class="text-sm font-semibold text-gray-800">{{ $document->submission_date->format('M d, Y h:i A') }}</p>
+                </div>
+
+                <div>
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Office</p>
+                    <p class="text-sm font-semibold text-gray-800">{{ optional($document->office)->office_name }}</p>
+                </div>
+
+                <div>
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Category</p>
+                    <p class="text-sm font-semibold text-gray-800">{{ $document->category }}</p>
+                </div>
+
+                <div>
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Priority</p>
+                    <p class="text-sm font-semibold text-gray-800 flex items-center gap-1.5">
+                        <span class="h-2 w-2 rounded-full {{ $priorityColors[$document->priority] ?? 'bg-gray-400' }}"></span>
+                        {{ $document->priority }}
+                    </p>
+                </div>
+
+            </div>
         </div>
 
-    </div>
+        <div class="border-t border-gray-300"></div>
 
-    @endif
+        {{-- ===================================================== --}}
+        {{-- OCR + PROCESSING ACTIONS + TIMELINE --}}
+        {{-- ===================================================== --}}
+        <div class="grid grid-cols-1 xl:grid-cols-3">
 
-</div>
-{{-- ===================================================== --}}
-{{-- PROCESSING ACTIONS --}}
-{{-- ===================================================== --}}
-<div class="col-span-12 xl:col-span-4">
+            {{-- OCR TEXT --}}
+            @if(!Str::contains(strtolower($document->file_type), 'pdf'))
+                <div class="xl:col-span-2 px-8 py-6 xl:border-r border-gray-300">
 
-    <div class="sticky top-6 bg-white rounded-2xl border shadow-sm overflow-hidden">
+                    <div class="flex items-center gap-2 mb-5">
+                        <span class="flex h-7 w-7 items-center justify-center rounded-full bg-indigo-50 text-indigo-600 text-sm">🔍</span>
+                        <h2 class="text-base font-semibold text-gray-900">OCR Extracted Text</h2>
+                    </div>
 
-        {{-- Header --}}
-        <div class="border-b px-6 py-5">
+                    <div class="rounded-xl border border-gray-200 bg-gray-50 p-6 max-h-[600px] overflow-y-auto whitespace-pre-wrap text-sm text-gray-700 leading-7">
+                        {{ $document->extracted_text ?: 'No OCR text available.' }}
+                    </div>
 
-            <h2 class="text-xl font-bold">
+                </div>
+            @endif
 
-                Processing Actions
+            {{-- RIGHT COLUMN: PROCESSING ACTIONS + TIMELINE STACKED (same width) --}}
+            <div class="{{ Str::contains(strtolower($document->file_type), 'pdf') ? 'xl:col-span-3' : '' }} flex flex-col">
 
-            </h2>
+                {{-- Processing Actions --}}
+                <div class="px-8 py-6">
 
-            <p class="text-sm text-gray-500 mt-1">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="flex h-7 w-7 items-center justify-center rounded-full bg-purple-50 text-purple-600 text-sm">⚙️</span>
+                        <h2 class="text-base font-semibold text-gray-900">Processing Actions</h2>
+                    </div>
+                    <p class="text-sm text-gray-500 mb-5 ml-9">Select how you want to process this document.</p>
 
-                Select how you want to process this document.
+                    <div class="space-y-4">
 
-            </p>
+                        {{-- Approve & Complete --}}
+                        <button
+                            type="button"
+                            onclick="openCompleteModal()"
+                            class="w-full text-left rounded-xl bg-green-600 hover:bg-green-700 text-white px-5 py-4 transition">
+                            <div class="text-base font-semibold">✅ Approve & Complete</div>
+                            <div class="text-xs text-green-100 mt-1">Finish processing this document.</div>
+                        </button>
 
-        </div>
+                        {{-- Approve & Forward --}}
+                        <button
+                            type="button"
+                            onclick="openForwardModal()"
+                            class="w-full text-left rounded-xl bg-blue-600 hover:bg-blue-700 text-white px-5 py-4 transition">
+                            <div class="text-base font-semibold">📤 Approve & Forward</div>
+                            <div class="text-xs text-blue-100 mt-1">Forward to another employee.</div>
+                        </button>
 
-        {{-- Buttons --}}
-        <div class="p-6 space-y-4">
+                        {{-- Reject --}}
+                        <button
+                            type="button"
+                            onclick="openRejectModal()"
+                            class="w-full text-left rounded-xl bg-red-600 hover:bg-red-700 text-white px-5 py-4 transition">
+                            <div class="text-base font-semibold">❌ Reject Document</div>
+                            <div class="text-xs text-red-100 mt-1">Reject this document.</div>
+                        </button>
 
-            {{-- Approve & Complete --}}
-            <button
-                type="button"
-                onclick="openCompleteModal()"
-                class="w-full rounded-xl bg-green-600 hover:bg-green-700 text-white px-5 py-4 transition">
-
-                <div class="text-lg font-semibold">
-
-                    ✅ Approve & Complete
+                    </div>
 
                 </div>
 
-                <div class="text-sm text-green-100 mt-1">
+                <div class="border-t border-gray-300"></div>
 
-                    Finish processing this document.
+                {{-- Document Timeline — same width, stacked below Processing Actions --}}
+                <div class="px-8 py-6">
+
+                    <div class="flex items-center gap-2 mb-5">
+                        <span class="flex h-7 w-7 items-center justify-center rounded-full bg-blue-50 text-blue-600 text-sm">🕓</span>
+                        <h2 class="text-base font-semibold text-gray-900">Document Timeline</h2>
+                    </div>
+
+                    <div class="space-y-0">
+
+                        {{-- Submitted --}}
+                        <div class="flex gap-4">
+                            <div class="flex flex-col items-center">
+                                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs text-white">✓</span>
+                                <span class="w-0.5 flex-1 bg-blue-100"></span>
+                            </div>
+                            <div class="pb-8">
+                                <h3 class="text-sm font-semibold text-gray-900">Submitted</h3>
+                                <p class="text-sm text-gray-600">
+                                    {{ optional($document->submittedBy)->full_name }}
+                                </p>
+                                <p class="text-xs text-gray-400 mt-0.5">
+                                    {{ optional($document->submission_date)?->format('M d, Y h:i A') }}
+                                </p>
+                            </div>
+                        </div>
+
+                        {{-- Assigned --}}
+                        @if($document->assigned_at)
+                        <div class="flex gap-4">
+                            <div class="flex flex-col items-center">
+                                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-xs text-white">✓</span>
+                                <span class="w-0.5 flex-1 bg-blue-100"></span>
+                            </div>
+                            <div class="pb-8">
+                                <h3 class="text-sm font-semibold text-gray-900">Assigned</h3>
+                                <p class="text-sm text-gray-600">
+                                    {{ optional($document->assignedUser)->full_name }}
+                                </p>
+                                <p class="text-xs text-gray-400 mt-0.5">
+                                    {{ $document->assigned_at->format('M d, Y h:i A') }}
+                                </p>
+                            </div>
+                        </div>
+                        @endif
+
+                        {{-- Processing Started --}}
+                        @if($document->started_processing_at)
+                        <div class="flex gap-4">
+                            <div class="flex flex-col items-center">
+                                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-yellow-500 text-xs text-white">✓</span>
+                                <span class="w-0.5 flex-1 bg-blue-100"></span>
+                            </div>
+                            <div class="pb-8">
+                                <h3 class="text-sm font-semibold text-gray-900">Processing Started</h3>
+                                <p class="text-sm text-gray-600">
+                                    {{ optional($document->assignedUser)->full_name }}
+                                </p>
+                                <p class="text-xs text-gray-400 mt-0.5">
+                                    {{ $document->started_processing_at->format('M d, Y h:i A') }}
+                                </p>
+                            </div>
+                        </div>
+                        @endif
+
+                        {{-- Submitted for Approval --}}
+                        @if($document->submitted_for_approval_at)
+                        <div class="flex gap-4">
+                            <div class="flex flex-col items-center">
+                                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-orange-500 text-xs text-white">✓</span>
+                                <span class="w-0.5 flex-1 bg-blue-100"></span>
+                            </div>
+                            <div class="pb-8">
+                                <h3 class="text-sm font-semibold text-gray-900">Submitted for Approval</h3>
+                                <p class="text-sm text-gray-600">
+                                    {{ optional($document->assignedUser)->full_name }}
+                                </p>
+                                <p class="text-xs text-gray-400 mt-0.5">
+                                    {{ $document->submitted_for_approval_at->format('M d, Y h:i A') }}
+                                </p>
+                            </div>
+                        </div>
+                        @endif
+
+                        {{-- Final Outcome: Completed or Rejected --}}
+                        @php
+                            $finalLog = $document->logs->firstWhere('action', ucfirst($document->status) == 'Completed' ? 'Completed' : 'Rejected');
+                        @endphp
+
+                        @if($document->status == 'completed')
+                        <div class="flex gap-4">
+                            <div class="flex flex-col items-center">
+                                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-600 text-xs text-white">✓</span>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-semibold text-gray-900">Completed</h3>
+                                <p class="text-sm text-gray-600">
+                                    {{ optional(optional($finalLog)->user)->full_name ?? optional($document->assignedUser)->full_name }}
+                                </p>
+                                <p class="text-xs text-gray-400 mt-0.5">
+                                    {{ $document->updated_at->format('M d, Y h:i A') }}
+                                </p>
+                            </div>
+                        </div>
+                        @elseif($document->status == 'rejected')
+                        <div class="flex gap-4">
+                            <div class="flex flex-col items-center">
+                                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-red-600 text-xs text-white">✕</span>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-semibold text-gray-900">Rejected</h3>
+                                <p class="text-sm text-gray-600">
+                                    {{ optional(optional($finalLog)->user)->full_name ?? optional($document->assignedUser)->full_name }}
+                                </p>
+                                <p class="text-xs text-gray-400 mt-0.5">
+                                    {{ $document->updated_at->format('M d, Y h:i A') }}
+                                </p>
+                            </div>
+                        </div>
+                        @endif
+
+                    </div>
 
                 </div>
 
-            </button>
-
-            {{-- Approve & Forward --}}
-            <button
-                type="button"
-                onclick="openForwardModal()"
-                class="w-full rounded-xl bg-blue-600 hover:bg-blue-700 text-white px-5 py-4 transition">
-
-                <div class="text-lg font-semibold">
-
-                    📤 Approve & Forward
-
-                </div>
-
-                <div class="text-sm text-blue-100 mt-1">
-
-                    Forward to another employee.
-
-                </div>
-
-            </button>
-
-            {{-- Reject --}}
-            <button
-                type="button"
-                onclick="openRejectModal()"
-                class="w-full rounded-xl bg-red-600 hover:bg-red-700 text-white px-5 py-4 transition">
-
-                <div class="text-lg font-semibold">
-
-                    ❌ Reject Document
-
-                </div>
-
-                <div class="text-sm text-red-100 mt-1">
-
-                    Reject this document.
-
-                </div>
-
-            </button>
+            </div>
 
         </div>
 
@@ -374,73 +319,44 @@ $statusColor = match($document->status){
 {{-- ===================================================== --}}
 {{-- APPROVE & COMPLETE MODAL --}}
 {{-- ===================================================== --}}
+<div id="completeModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4">
 
-<div
-    id="completeModal"
-    class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50">
+    <div class="w-full max-w-lg rounded-2xl bg-white shadow-2xl overflow-hidden">
 
-    <div class="w-full max-w-lg rounded-2xl bg-white shadow-2xl">
-
-        {{-- Header --}}
-        <div class="border-b px-6 py-5">
-
-            <h2 class="text-2xl font-bold text-green-700">
-
-                ✅ Approve & Complete
-
-            </h2>
-
-            <p class="mt-1 text-sm text-gray-500">
-
-                Complete the processing of this document.
-
-            </p>
-
+        <div class="px-8 py-6">
+            <h2 class="text-lg font-bold text-green-700">✅ Approve & Complete</h2>
+            <p class="mt-1 text-sm text-gray-500">Complete the processing of this document.</p>
         </div>
 
-<form
-    method="POST"
-    action="{{ route('user.incoming.complete', $document) }}">
-    @csrf
+        <div class="border-t border-gray-100"></div>
 
-            {{-- Body --}}
-            <div class="p-6">
+        <form method="POST" action="{{ route('user.incoming.complete', $document) }}">
+            @csrf
 
-                <label class="block text-sm font-semibold text-gray-700 mb-2">
-
-                    Remarks
-
-                </label>
-
+            <div class="px-8 py-6">
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Remarks</label>
                 <textarea
                     name="remarks"
                     rows="5"
-                    class="w-full rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500"
+                    class="w-full rounded-xl border-gray-300 text-sm focus:border-green-500 focus:ring-green-500"
                     placeholder="Enter completion remarks..."></textarea>
-
             </div>
 
-            {{-- Footer --}}
-            <div class="flex justify-end gap-3 border-t px-6 py-5">
+            <div class="border-t border-gray-100"></div>
 
+            <div class="flex justify-end gap-3 px-8 py-5">
                 <button
                     type="button"
                     onclick="closeCompleteModal()"
-                    class="rounded-xl border border-gray-300 px-5 py-2 hover:bg-gray-100 transition">
-
+                    class="px-5 py-2.5 rounded-xl text-sm font-semibold text-gray-600 border border-gray-300 hover:bg-gray-50 transition">
                     Cancel
-
                 </button>
-
                 <button
                     type="submit"
-                 onclick="closeCompleteModal()"
-                    class="rounded-xl bg-blue-600 px-6 py-2 font-semibold text-white hover:bg-blue-700">
-
-                   Complete
-
+                    onclick="closeCompleteModal()"
+                    class="rounded-xl bg-green-600 hover:bg-green-700 px-6 py-2.5 text-sm font-semibold text-white transition">
+                    Complete
                 </button>
-
             </div>
 
         </form>
@@ -449,155 +365,81 @@ $statusColor = match($document->status){
 
 </div>
 
-</div>
-
 {{-- ===================================================== --}}
 {{-- APPROVE & FORWARD MODAL --}}
 {{-- ===================================================== --}}
+<div id="forwardModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4">
 
-<div
-    id="forwardModal"
-    class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50">
+    <div class="w-full max-w-2xl rounded-2xl bg-white shadow-2xl overflow-hidden">
 
-    <div class="w-full max-w-2xl rounded-2xl bg-white shadow-2xl">
-
-        {{-- Header --}}
-        <div class="border-b px-6 py-5">
-
-            <h2 class="text-2xl font-bold text-blue-700">
-
-                📤 Approve & Forward
-
-            </h2>
-
-            <p class="mt-1 text-sm text-gray-500">
-
-                Approve this document and forward it to another employee.
-
-            </p>
-
+        <div class="px-8 py-6">
+            <h2 class="text-lg font-bold text-blue-700">📤 Approve & Forward</h2>
+            <p class="mt-1 text-sm text-gray-500">Approve this document and forward it to another employee.</p>
         </div>
 
-<form
-    method="POST"
-    action="{{ route('user.incoming.forward', $document) }}">
-    @csrf
+        <div class="border-t border-gray-100"></div>
 
-            <div class="p-6 space-y-6">
+        <form method="POST" action="{{ route('user.incoming.forward', $document) }}">
+            @csrf
 
-                {{-- Destination Office --}}
+            <div class="px-8 py-6 space-y-5">
+
                 <div>
-
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">
-
-                        Destination Office
-
-                    </label>
-
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Destination Office</label>
                     <select
                         id="officeSelect"
                         name="receiver_office_id"
-                        class="w-full rounded-xl border-gray-300"
+                        class="w-full rounded-xl border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500"
                         required>
-
-                        <option value="">
-
-                            Select Office
-
-                        </option>
-
+                        <option value="">Select Office</option>
                         @foreach($offices as $office)
-
-                            <option value="{{ $office->id }}">
-
-                                {{ $office->office_name }}
-
-                            </option>
-
+                            <option value="{{ $office->id }}">{{ $office->office_name }}</option>
                         @endforeach
-
                     </select>
-
                 </div>
 
-                {{-- Employee --}}
                 <div>
-
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">
-
-                        Assign Employee
-
-                    </label>
-
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Assign Employee</label>
                     <select
                         id="employeeSelect"
                         name="assigned_to"
-                        class="w-full rounded-xl border-gray-300"
+                        class="w-full rounded-xl border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500"
                         required>
-
-                        <option value="">
-
-                            Select Employee
-
-                        </option>
-
+                        <option value="">Select Employee</option>
                         @foreach($users as $user)
-
-                            <option
-                                value="{{ $user->id }}"
-                                data-office="{{ $user->office_id }}">
-
-                                {{ $user->full_name }}
-                                ({{ $user->office->office_name }})
-
+                            <option value="{{ $user->id }}" data-office="{{ $user->office_id }}">
+                                {{ $user->full_name }} ({{ $user->office->office_name }})
                             </option>
-
                         @endforeach
-
                     </select>
-
                 </div>
 
-                {{-- Remarks --}}
                 <div>
-
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">
-
-                        Remarks
-
-                    </label>
-
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Remarks</label>
                     <textarea
                         name="remarks"
                         rows="5"
-                        class="w-full rounded-xl border-gray-300"
+                        class="w-full rounded-xl border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500"
                         placeholder="Enter forwarding remarks..."></textarea>
-
                 </div>
 
             </div>
 
-            {{-- Footer --}}
-            <div class="flex justify-end gap-3 border-t px-6 py-5">
+            <div class="border-t border-gray-100"></div>
 
+            <div class="flex justify-end gap-3 px-8 py-5">
                 <button
                     type="button"
                     onclick="closeForwardModal()"
-                    class="rounded-xl border border-gray-300 px-5 py-2 hover:bg-gray-100">
-
+                    class="px-5 py-2.5 rounded-xl text-sm font-semibold text-gray-600 border border-gray-300 hover:bg-gray-50 transition">
                     Cancel
-
                 </button>
-
                 <button
                     type="submit"
-                 onclick="closeForwardModal()"
-                    class="rounded-xl bg-blue-600 px-6 py-2 font-semibold text-white hover:bg-blue-700">
-
-                   Forward
-
+                    onclick="closeForwardModal()"
+                    class="rounded-xl bg-blue-600 hover:bg-blue-700 px-6 py-2.5 text-sm font-semibold text-white transition">
+                    Forward
                 </button>
-
             </div>
 
         </form>
@@ -609,72 +451,45 @@ $statusColor = match($document->status){
 {{-- ===================================================== --}}
 {{-- REJECT DOCUMENT MODAL --}}
 {{-- ===================================================== --}}
+<div id="rejectModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4">
 
-<div
-    id="rejectModal"
-    class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50">
+    <div class="w-full max-w-lg rounded-2xl bg-white shadow-2xl overflow-hidden">
 
-    <div class="w-full max-w-lg rounded-2xl bg-white shadow-2xl">
-
-        {{-- Header --}}
-        <div class="border-b px-6 py-5">
-
-            <h2 class="text-2xl font-bold text-red-600">
-
-                ❌ Reject Document
-
-            </h2>
-
-            <p class="mt-1 text-sm text-gray-500">
-
-                Reject this document and stop the processing.
-
-            </p>
-
+        <div class="px-8 py-6">
+            <h2 class="text-lg font-bold text-red-600">❌ Reject Document</h2>
+            <p class="mt-1 text-sm text-gray-500">Reject this document and stop the processing.</p>
         </div>
 
-<form
-    method="POST"
-    action="{{ route('user.incoming.reject', $document) }}">
-    @csrf
+        <div class="border-t border-gray-100"></div>
 
-            <div class="p-6">
+        <form method="POST" action="{{ route('user.incoming.reject', $document) }}">
+            @csrf
 
-                <label class="block text-sm font-semibold text-gray-700 mb-2">
-
-                    Remarks
-
-                </label>
-
+            <div class="px-8 py-6">
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Remarks</label>
                 <textarea
                     name="remarks"
                     rows="5"
                     required
-                    class="w-full rounded-xl border-gray-300"
+                    class="w-full rounded-xl border-gray-300 text-sm focus:border-red-500 focus:ring-red-500"
                     placeholder="Enter rejection remarks..."></textarea>
-
             </div>
 
-            <div class="flex justify-end gap-3 border-t px-6 py-5">
+            <div class="border-t border-gray-100"></div>
 
+            <div class="flex justify-end gap-3 px-8 py-5">
                 <button
                     type="button"
                     onclick="closeRejectModal()"
-                    class="rounded-xl border border-gray-300 px-5 py-2 hover:bg-gray-100">
-
+                    class="px-5 py-2.5 rounded-xl text-sm font-semibold text-gray-600 border border-gray-300 hover:bg-gray-50 transition">
                     Cancel
-
                 </button>
-
-                 <button
+                <button
                     type="submit"
-                  onclick="closeRejectModal()"
-                    class="rounded-xl bg-red-600 px-6 py-2 font-semibold text-white hover:bg-red-700">
-
+                    onclick="closeRejectModal()"
+                    class="rounded-xl bg-red-600 hover:bg-red-700 px-6 py-2.5 text-sm font-semibold text-white transition">
                     Reject Document
-
                 </button>
-
             </div>
 
         </form>
@@ -717,11 +532,8 @@ document.addEventListener('DOMContentLoaded', function(){
             const officeId = this.value;
 
             [...employee.options].forEach(option => {
-
                 if (!option.dataset.office) return;
-
                 option.hidden = option.dataset.office !== officeId;
-
             });
 
             employee.value = '';
@@ -731,9 +543,6 @@ document.addEventListener('DOMContentLoaded', function(){
     }
 
 });
-
 </script>
-        
 
 </x-layouts.employee-layout>
-

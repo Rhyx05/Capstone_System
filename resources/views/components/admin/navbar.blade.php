@@ -1,23 +1,23 @@
-<header class="sticky top-0 h-20 bg-white border-b shadow-sm flex justify-between items-center px-8 z-30">
+<header class="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-indigo-100 bg-gradient-to-r from-indigo-50 via-blue-50 to-white px-6 shadow-sm">
 
-    <div>
+    {{-- Left --}}
+    <div></div>
 
-
-
-        <p class="text-sm text-gray-500">
-
-        </p>
-
-    </div>
-
-    <div class="flex items-center gap-6">
+    {{-- Right --}}
+    <div class="flex items-center gap-4">
 
         {{-- Notification --}}
-        <button class="relative text-2xl">
+        <button
+            class="relative flex h-10 w-10 items-center justify-center rounded-xl border border-indigo-100 bg-white text-indigo-600 shadow-sm transition hover:bg-indigo-50">
 
-            🔔
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M15 17h5l-1.4-1.4A2 2 0 0118 14.2V11a6 6 0 10-12 0v3.2a2 2 0 01-.6 1.4L4 17h5m6 0a3 3 0 11-6 0h6z"/>
+            </svg>
 
-            <span class="absolute -top-2 -right-2 w-5 h-5 bg-blue-600 rounded-full text-white text-xs flex justify-center items-center">
+            <span
+                class="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-indigo-600 text-[10px] font-bold text-white">
 
                 5
 
@@ -25,65 +25,44 @@
 
         </button>
 
-        {{-- User Dropdown --}}
-        <x-dropdown align="right" width="56">
+        {{-- User --}}
+        <div class="flex items-center gap-3 rounded-xl px-3 py-2">
 
-            <x-slot name="trigger">
+            <div class="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-100">
 
-                <button class="flex items-center gap-3 hover:bg-gray-100 rounded-xl px-3 py-2">
+                <svg
+                    class="h-5 w-5 text-indigo-600"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    viewBox="0 0 24 24">
 
-                    <div class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center">
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M5.1 20a7 7 0 0113.8 0M12 12a4 4 0 100-8 4 4 0 000 8z"/>
 
-                        👤
+                </svg>
 
-                    </div>
+            </div>
 
-                    <div class="text-left">
+            <div class="leading-tight">
 
-                        <div class="font-semibold">
+                <div class="text-sm font-semibold text-slate-800">
 
-                            {{ auth()->user()->name }}
+                    {{ trim(auth()->user()->first_name . ' ' . auth()->user()->last_name) }}
 
-                        </div>
+                </div>
 
-                        <div class="text-xs text-gray-500">
+                <div class="text-xs capitalize text-slate-500">
 
-                            Administrator
+                    Administrator
 
-                        </div>
+                </div>
 
-                    </div>
+            </div>
 
-                </button>
-
-            </x-slot>
-
-            <x-slot name="content">
-
-                <x-dropdown-link :href="route('admin.settings')">
-
-                    Settings
-
-                </x-dropdown-link>
-
-                <form method="POST" action="{{ route('logout') }}">
-
-                    @csrf
-
-                    <x-dropdown-link
-                        :href="route('logout')"
-                        onclick="event.preventDefault();
-                        this.closest('form').submit();">
-
-                        Logout
-
-                    </x-dropdown-link>
-
-                </form>
-
-            </x-slot>
-
-        </x-dropdown>
+        </div>
 
     </div>
 
