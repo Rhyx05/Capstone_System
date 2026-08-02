@@ -1,46 +1,14 @@
 <x-layouts.admin-layout>
 
-<div class="space-y-8">
-
-    {{-- ========================================================= --}}
-    {{-- PAGE HEADER --}}
-    {{-- ========================================================= --}}
-
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-
-        <div>
-
-            <h1 class="text-3xl font-bold text-gray-900">
-                Electronic Filing
-            </h1>
-
-            <p class="mt-2 text-gray-500">
-                Manage electronic filing categories and document repositories.
-            </p>
-
-        </div>
-
-    </div>
-
-    {{-- ========================================================= --}}
-    {{-- STATISTICS --}}
-    {{-- ========================================================= --}}
-
-    @include('admin.filing.partials.statistics')
+<div>
 
     {{-- ========================================================= --}}
     {{-- REPOSITORIES --}}
     {{-- ========================================================= --}}
 
-    @include('admin.filing.partials.repositories')
+    @include('admin.filing.partials.electronicfiling')
 
-    {{-- ========================================================= --}}
-    {{-- DOCUMENTS READY FOR FILING --}}
-    {{-- ========================================================= --}}
 
-    @include('admin.filing.partials.pending-documents')
-
-    
 
 </div>
 
@@ -54,7 +22,6 @@
 
 @include('admin.filing.modals.delete')
 
-@include('admin.filing.modals.archive-document')
 
 {{-- ========================================================= --}}
 {{-- PAGE SCRIPTS --}}

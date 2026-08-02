@@ -1,514 +1,276 @@
 <x-layouts.admin-layout>
 
-<div class="space-y-8">
+<div class="max-w-6xl mx-auto">
 
-    {{-- Header --}}
-    <div>
+    {{-- ================= Single Unified Card ================= --}}
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
 
-        <h1 class="text-3xl font-bold text-gray-900">
+        {{-- Header --}}
+        <div class="relative overflow-hidden bg-gradient-to-r from-indigo-50 via-blue-50 to-white px-8 py-7">
+            <div class="flex items-center gap-4">
+                <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white shadow-sm border border-indigo-100">
+                    <svg class="w-6 h-6 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-gray-900">Audit Trail</h1>
+                    <p class="mt-0.5 text-sm text-gray-500">Monitor every important activity performed throughout the system.</p>
+                </div>
+            </div>
+        </div>
 
-            Audit Trail
+        <div class="border-t border-gray-100"></div>
 
-        </h1>
-
-        <p class="mt-2 text-gray-500">
-
-            Monitor every important activity performed throughout the system.
-
-        </p>
-
-    </div>
-
-</div>
-
-{{-- ========================================================= --}}
-{{-- FILTERS --}}
-{{-- ========================================================= --}}
-
-<div class="bg-white rounded-2xl border shadow-sm">
-
-    <div class="border-b px-6 py-5">
-
-  <h2 class="text-xl font-bold">
-            Filter Audit Logs
-        </h2>
-
-        <p class="text-sm text-gray-500 mt-1">
-            Search and filter system activities.
-        </p>
-    </div>
-
-    <form method="GET" action="{{ route('admin.audit') }}">
-
-        <div class="p-6">
-
-            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-4">
-
-                {{-- Search --}}
-                <div class="xl:col-span-2">
-
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        Search
-                    </label>
+        {{-- Filters: search + action + date — auto-filters the table live --}}
+        <form method="GET" action="{{ route('admin.audit') }}" id="filterForm" class="px-6 py-5">
+            <div class="flex flex-col md:flex-row md:items-center gap-3">
 
                 <input
-    type="text"
-    name="search"
-    value="{{ request('search') }}"
-    placeholder="Search user, action or description..."
-    class="w-full rounded-xl border-gray-300">
-                </div>
+                    type="text"
+                    name="search"
+                    id="searchInput"
+                    value="{{ request('search') }}"
+                    placeholder="Search user, action or description..."
+                    autocomplete="off"
+                    class="flex-1 rounded-xl border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
 
-                {{-- Action --}}
-                <div>
+                <select name="action" id="actionSelect" class="rounded-xl border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500 md:w-56">
+                    <option value="">All Actions</option>
+                    @foreach([
+                        'Submitted',
+                        'Approved',
+                        'Approved & Routed',
+                        'Forwarded',
+                        'Returned',
+                        'Rejected',
+                        'Started Processing',
+                        'Completed'
+                    ] as $action)
+                        <option value="{{ $action }}" @selected(request('action') == $action)>
+                            {{ $action }}
+                        </option>
+                    @endforeach
+                </select>
 
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        Action
-                    </label>
-
-             <select
-    name="action"
-    class="w-full rounded-xl border-gray-300">
-
-    <option value="">All Actions</option>
-
-    @foreach([
-        'Submitted',
-        'Approved',
-        'Approved & Routed',
-        'Forwarded',
-        'Returned',
-        'Rejected',
-        'Started Processing',
-        'Completed'
-    ] as $action)
-
-        <option
-            value="{{ $action }}"
-            @selected(request('action') == $action)>
-
-            {{ $action }}
-
-        </option>
-
-    @endforeach
-
-</select>
-                </div>
-
-                {{-- Module --}}
-                <div>
-
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        Module
-                    </label>
-
-         <select
-    name="module"
-    class="w-full rounded-xl border-gray-300">
-
-    <option value="">All Modules</option>
-
-    <option value="Documents"
-        @selected(request('module')=='Documents')>
-
-        Documents
-
-    </option>
-
-    <option value="Incoming Documents"
-        @selected(request('module')=='Incoming Documents')>
-
-        Incoming Documents
-
-    </option>
-
-</select>
-
-                </div>
-
-                {{-- Date --}}
-                <div>
-
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        Date
-                    </label>
-
-                 <input
-    type="date"
-    name="date"
-    value="{{ request('date') }}"
-    class="w-full rounded-xl border-gray-300">
-
-                </div>
-
-                {{-- Buttons --}}
-              <div class="flex items-end gap-2">
-
-    <button
-        class="flex-1 bg-blue-600 hover:bg-blue-700 text-white rounded-xl py-3 font-semibold">
-
-        Apply
-
-    </button>
-
-    <a
-        href="{{ route('admin.audit') }}"
-        class="px-4 py-3 rounded-xl border hover:bg-gray-100">
-
-        Reset
-
-    </a>
-
-</div>
+                <input
+                    type="date"
+                    name="date"
+                    id="dateInput"
+                    value="{{ request('date') }}"
+                    class="rounded-xl border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500 md:w-48">
 
             </div>
-
-        </div>
-
-    </form>
-
-</div>
-
-{{-- ========================================================= --}}
-{{-- AUDIT LOGS --}}
-{{-- ========================================================= --}}
-
-<div class="bg-white rounded-2xl border shadow-sm overflow-hidden">
-
-    {{-- Card Header --}}
-    <div class="px-6 py-5 border-b flex items-center justify-between">
-
-        <div>
-
-            <h2 class="text-xl font-bold">
-                Audit Logs
-            </h2>
-
-            <p class="text-sm text-gray-500 mt-1">
-                Complete history of user activities across the system.
-            </p>
-
-        </div>
-
-        <span class="text-sm text-gray-500">
-           {{ number_format($documents->total()) }}
-        </span>
-
-    </div>
-
-    <div class="overflow-x-auto">
-
-        <table class="min-w-full divide-y divide-gray-200">
-{{-- ========================= --}}
-{{-- TABLE HEADER --}}
-{{-- ========================= --}}
-
-<thead class="bg-gray-50">
-
-<tr>
-
-    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
-        Date
-    </th>
-
-    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
-        Submitted By
-    </th>
-
-    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
-        Admin Review
-    </th>
-
-    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
-        User B
-    </th>
-
-    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
-        User C
-    </th>
-
-    <th class="px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider text-gray-500">
-        Document
-    </th>
-
-</tr>
-
-</thead>
-
-            {{-- ========================= --}}
-            {{-- TABLE BODY --}}
-            {{-- ========================= --}}
-<tbody class="divide-y divide-gray-100 bg-white">
-
-@forelse($documents as $document)
-
-@php
-
-    $adminReview = $document->logs->first(function ($log) {
-        return in_array(strtolower($log->action), [
-            'approved',
-            'approved & routed',
-            'returned',
-            'rejected'
-        ]);
-    });
-
-    $processingLogs = $document->logs
-        ->filter(function ($log) {
-            return in_array(strtolower($log->action), [
-                'started processing',
-                'forwarded',
-                'completed'
-            ]);
-        })
-        ->values();
-
-    $userB = $processingLogs->get(0);
-
-    $userC = $processingLogs->get(1);
-
-@endphp
-
-<tr class="hover:bg-gray-50 transition">
-
-    {{-- DATE --}}
-    <td class="px-6 py-5 whitespace-nowrap">
-
-        <div class="font-semibold">
-
-            {{ $document->submission_date->format('M d, Y') }}
-
-        </div>
-
-        <div class="text-sm text-gray-500">
-
-            {{ $document->submission_date->format('h:i A') }}
-
-        </div>
-
-    </td>
-
-    {{-- SUBMITTED BY --}}
-    <td class="px-6 py-5">
-
-        <div class="font-semibold">
-
-            {{ $document->submittedBy->full_name }}
-
-        </div>
-
-        <div class="text-sm text-gray-500">
-
-            {{ optional($document->submittedBy->office)->office_name }}
-
-        </div>
-
-    </td>
-
-    {{-- ADMIN REVIEW --}}
-<td class="px-6 py-5">
-
-@if($adminReview)
-
-    <div class="font-semibold">
-
-        {{ optional($adminReview->user)->full_name }}
-
-    </div>
-
-    <div class="text-sm text-blue-600">
-
-        {{ $adminReview->action }}
-
-    </div>
-
-@else
-
-    <span class="text-gray-400">
-
-        —
-
-    </span>
-
-@endif
-
-</td>
-
- {{-- USER B --}}
-  <td class="px-6 py-5">
-
-@if($userC)
-
-    <div class="font-semibold">
-
-        {{ optional($userC->user)->full_name }}
-
-    </div>
-
-    <div class="text-sm text-gray-500">
-
-        {{ $userC->action }}
-
-    </div>
-
-@else
-
-    <span class="text-gray-400">
-
-        —
-
-    </span>
-
-@endif
-
-</td>
-
-    {{-- USER C --}}
-   <td class="px-6 py-5">
-
-@if($userB)
-
-    <div class="font-semibold">
-
-        {{ optional($userB->user)->full_name }}
-
-    </div>
-
-    <div class="text-sm text-gray-500">
-
-        {{ $userB->action }}
-
-    </div>
-
-@else
-
-    <span class="text-gray-400">
-
-        —
-
-    </span>
-
-@endif
-
-</td>
-
-   
-
-    {{-- DOCUMENT --}}
-    <td class="px-6 py-5 text-center">
-
-  <button
-    onclick="openTimeline({{ $document->id }})"
-    class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white">
-
-    View Timeline
-
-</button>
-
-    </td>
-
-</tr>
-
-@empty
-
-<tr>
-
-    <td colspan="6" class="px-6 py-12 text-center text-gray-500">
-
-        No documents found.
-
-    </td>
-
-</tr>
-
-@endforelse
-
-</tbody>
-
-        </table>
-
-    </div>
-
-    {{-- Pagination --}}
-    <div class="px-6 py-4 border-t bg-gray-50">
-
-       {{ $documents->links() }}
-
-    </div>
-
-</div>
-
-<div
-    id="timelineModal"
-    class="fixed inset-0 bg-black/50 hidden z-50 items-center justify-center">
-
-    <div
-        class="bg-white rounded-2xl shadow-xl w-full max-w-5xl max-h-[90vh] overflow-hidden">
-
-        <div class="flex justify-between items-center px-6 py-5 border-b">
-
-            <h2 class="text-xl font-bold">
-
-                Document Timeline
-
-            </h2>
-
-            <button
-                onclick="closeTimeline()"
-                class="text-2xl text-gray-500 hover:text-black">
-
-                ×
-
-            </button>
-
-        </div>
-
-        <div
-            id="timelineContent"
-            class="p-6 overflow-y-auto max-h-[75vh]">
-
-            Loading...
-
-        </div>
+        </form>
+
+        <div class="border-t border-gray-100"></div>
+
+        {{-- Table --}}
+        @if($documents->count())
+
+            <div class="px-6 pt-5 flex items-center justify-between">
+                <h2 class="text-sm font-semibold text-gray-900">Audit Logs</h2>
+                <span class="text-xs text-gray-500">{{ number_format($documents->total()) }} total</span>
+            </div>
+
+            <div class="overflow-x-auto mt-3">
+                <table class="w-full text-sm">
+
+                    <thead>
+                        <tr class="bg-gray-50 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                            <th class="px-6 py-3.5 text-left">Date</th>
+                            <th class="px-6 py-3.5 text-left">Submitted By (User A)</th>
+                            <th class="px-6 py-3.5 text-left">Admin Review</th>
+                            <th class="px-6 py-3.5 text-left">User B</th>
+                            <th class="px-6 py-3.5 text-left">User C (Secondary Approval)</th>
+                            <th class="px-6 py-3.5 text-left">User D (Tertiary Approval)</th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="divide-y divide-gray-100">
+
+                        @foreach($documents as $document)
+
+                            @php
+                                // Admin's review action: Approved, Approved & Routed, Returned, or Rejected
+                                $adminReview = $document->logs->first(function ($log) {
+                                    return in_array(strtolower($log->action), [
+                                        'approved',
+                                        'approved & routed',
+                                        'returned',
+                                        'rejected',
+                                    ]);
+                                });
+
+                                // Chain of processing actions after admin routes the document,
+                                // in chronological order: 1st = User B, 2nd = User C, 3rd = User D
+                                $processingLogs = $document->logs
+                                    ->filter(function ($log) {
+                                        return in_array(strtolower($log->action), [
+                                            'started processing',
+                                            'forwarded',
+                                            'completed',
+                                            'rejected',
+                                        ]);
+                                    })
+                                    ->sortBy('created_at')
+                                    ->values();
+
+                                $userB = $processingLogs->get(0);
+                                $userC = $processingLogs->get(1);
+                                $userD = $processingLogs->get(2);
+
+                                $actionColors = [
+                                    'submitted'           => 'text-blue-600',
+                                    'approved'            => 'text-green-600',
+                                    'approved & routed'   => 'text-green-600',
+                                    'forwarded'           => 'text-purple-600',
+                                    'returned'            => 'text-orange-600',
+                                    'rejected'            => 'text-red-600',
+                                    'started processing'  => 'text-yellow-600',
+                                    'completed'           => 'text-emerald-600',
+                                ];
+                            @endphp
+
+                            <tr class="hover:bg-gray-50 transition">
+
+                                {{-- DATE --}}
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-semibold text-gray-800">
+                                        {{ $document->submission_date->format('M d, Y') }}
+                                    </div>
+                                    <div class="text-xs text-gray-500">
+                                        {{ $document->submission_date->format('h:i A') }}
+                                    </div>
+                                </td>
+
+                                {{-- SUBMITTED BY (User A) --}}
+                                <td class="px-6 py-4">
+                                    <div class="text-sm font-semibold text-gray-800">
+                                        {{ $document->submittedBy->full_name }}
+                                    </div>
+                                    <div class="text-xs text-gray-500">
+                                        {{ optional($document->submittedBy->office)->office_name }}
+                                    </div>
+                                </td>
+
+                                {{-- ADMIN REVIEW --}}
+                                <td class="px-6 py-4">
+                                    @if($adminReview)
+                                        <div class="text-sm font-semibold text-gray-800">
+                                            {{ optional($adminReview->user)->full_name }}
+                                        </div>
+                                        <div class="text-xs font-medium {{ $actionColors[strtolower($adminReview->action)] ?? 'text-gray-500' }}">
+                                            {{ $adminReview->action }}
+                                        </div>
+                                    @else
+                                        <span class="text-gray-400 text-sm">—</span>
+                                    @endif
+                                </td>
+
+                                {{-- USER B --}}
+                                <td class="px-6 py-4">
+                                    @if($userB)
+                                        <div class="text-sm font-semibold text-gray-800">
+                                            {{ optional($userB->user)->full_name }}
+                                        </div>
+                                        <div class="text-xs font-medium {{ $actionColors[strtolower($userB->action)] ?? 'text-gray-500' }}">
+                                            {{ $userB->action }}
+                                        </div>
+                                    @else
+                                        <span class="text-gray-400 text-sm">—</span>
+                                    @endif
+                                </td>
+
+                                {{-- USER C --}}
+                                <td class="px-6 py-4">
+                                    @if($userC)
+                                        <div class="text-sm font-semibold text-gray-800">
+                                            {{ optional($userC->user)->full_name }}
+                                        </div>
+                                        <div class="text-xs font-medium {{ $actionColors[strtolower($userC->action)] ?? 'text-gray-500' }}">
+                                            {{ $userC->action }}
+                                        </div>
+                                    @else
+                                        <span class="text-gray-400 text-sm">—</span>
+                                    @endif
+                                </td>
+
+                                {{-- USER D --}}
+                                <td class="px-6 py-4">
+                                    @if($userD)
+                                        <div class="text-sm font-semibold text-gray-800">
+                                            {{ optional($userD->user)->full_name }}
+                                        </div>
+                                        <div class="text-xs font-medium {{ $actionColors[strtolower($userD->action)] ?? 'text-gray-500' }}">
+                                            {{ $userD->action }}
+                                        </div>
+                                    @else
+                                        <span class="text-gray-400 text-sm">—</span>
+                                    @endif
+                                </td>
+
+                            </tr>
+
+                        @endforeach
+
+                    </tbody>
+
+                </table>
+            </div>
+
+            <div class="border-t border-gray-100 px-6 py-4">
+                {{ $documents->appends(request()->query())->links() }}
+            </div>
+
+        @else
+
+            {{-- Empty State --}}
+            <div class="px-8 py-16 text-center">
+                <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gray-50 border border-gray-200 text-2xl mb-4">
+                    🗂️
+                </div>
+                <h2 class="text-base font-semibold text-gray-900">No Documents Found</h2>
+                <p class="text-sm text-gray-500 mt-1">
+                    @if(request('search') || request('action') || request('date'))
+                        No activity matches your search or filter.
+                    @else
+                        No audit activity has been recorded yet.
+                    @endif
+                </p>
+            </div>
+
+        @endif
 
     </div>
 
 </div>
 
 <script>
+(function () {
+    const form = document.getElementById('filterForm');
+    const searchInput = document.getElementById('searchInput');
+    const actionSelect = document.getElementById('actionSelect');
+    const dateInput = document.getElementById('dateInput');
+    let debounceTimer;
 
-function openTimeline(id){
-
-    fetch('/admin/audit/'+id)
-
-    .then(response=>response.text())
-
-    .then(html=>{
-
-        document.getElementById('timelineContent').innerHTML=html;
-
-        document.getElementById('timelineModal')
-            .classList.remove('hidden');
-
-        document.getElementById('timelineModal')
-            .classList.add('flex');
-
+    // Live filter as the user types (debounced so it doesn't submit on every keystroke)
+    searchInput.addEventListener('input', function () {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(function () {
+            form.submit();
+        }, 500);
     });
 
-}
+    // Instant filter when action or date changes
+    actionSelect.addEventListener('change', function () {
+        form.submit();
+    });
 
-function closeTimeline(){
-
-    document.getElementById('timelineModal')
-        .classList.remove('flex');
-
-    document.getElementById('timelineModal')
-        .classList.add('hidden');
-
-}
-
+    dateInput.addEventListener('change', function () {
+        form.submit();
+    });
+})();
 </script>
-
 
 </x-layouts.admin-layout>

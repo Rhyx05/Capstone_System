@@ -1,215 +1,174 @@
 <x-layouts.admin-layout>
 
-
-{{-- ========================================================= --}}
-{{-- PAGE HEADER --}}
-{{-- ========================================================= --}}
+<div class="max-w-6xl mx-auto">
 
 @php
-
     $statusColor = match($document->status){
-
-        'for_review' => 'bg-yellow-300 text-yellow-700',
-
-        'approved' => 'bg-green-300 text-green-700',
-
-        'assigned' => 'bg-blue-300 text-blue-700',
-
-        'returned' => 'bg-orange-300 text-orange-700',
-
-        'rejected' => 'bg-red-300 text-red-700',
-
-        'completed' => 'bg-emerald-300 text-emerald-700',
-
-        default => 'bg-gray-300 text-gray-700',
-
+        'for_review' => 'bg-yellow-50 text-yellow-700 border-yellow-200',
+        'approved'   => 'bg-green-50 text-green-700 border-green-200',
+        'assigned'   => 'bg-blue-50 text-blue-700 border-blue-200',
+        'returned'   => 'bg-orange-50 text-orange-700 border-orange-200',
+        'rejected'   => 'bg-red-50 text-red-700 border-red-200',
+        'completed'  => 'bg-emerald-50 text-emerald-700 border-emerald-200',
+        default      => 'bg-gray-100 text-gray-700 border-gray-200',
     };
-
+    $priorityColors = [
+        'Low'    => 'bg-green-500',
+        'Normal' => 'bg-blue-500',
+        'High'   => 'bg-orange-500',
+        'Urgent' => 'bg-red-500',
+    ];
 @endphp
 
-<div class="grid grid-cols-3 items-center mb-8">
+    {{-- ================= Single Unified Card ================= --}}
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
 
-    {{-- Left: Icon + Title --}}
-    <div class="flex items-center gap-4">
+        {{-- ===================================================== --}}
+        {{-- HEADER --}}
+        {{-- ===================================================== --}}
+        <div class="relative overflow-hidden bg-gradient-to-r from-indigo-50 via-blue-50 to-white px-8 py-7">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
+                <div class="flex items-center gap-4">
+                    <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white shadow-sm border border-indigo-100">
+                        <svg class="w-6 h-6 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-900">Review Document</h1>
+                        <p class="mt-0.5 text-sm text-gray-500">
+                            Tracking Code
+                            <span class="font-semibold text-indigo-700">{{ $document->tracking_code }}</span>
+                        </p>
+                    </div>
+                </div>
 
-        {{-- Title --}}
-        <div>
+                <div class="flex items-center gap-3">
 
-            <h1 class="text-2xl font-bold text-gray-900">
+                    <a
+                        href="{{ route('admin.documents') }}"
+                        class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 hover:border-indigo-200 hover:text-indigo-600 transition">
+                        <span>←</span> Back
+                    </a>
 
-                Review Document
+                </div>
 
-            </h1>
-
-            <p class="mt-1 text-gray-500">
-
-                Tracking Code
-
-                <span class="font-semibold text-blue-700">
-
-                    {{ $document->tracking_code }}
-
-                </span>
-
-            </p>
-
+            </div>
         </div>
 
-    </div>
+        <div class="border-t border-gray-100"></div>
 
-    {{-- Center: Status --}}
-    <div class="flex justify-center">
+        {{-- ===================================================== --}}
+        {{-- DOCUMENT DETAILS --}}
+        {{-- ===================================================== --}}
+        <div class="px-8 py-6">
 
-        <span class="px-5 py-2 rounded-full text-sm font-semibold {{ $statusColor }}">
-
-            {{ ucwords(str_replace('_',' ',$document->status)) }}
-
-        </span>
-
-    </div>
-
-{{-- Right: Back Button --}}
-<div class="flex justify-end">
-
-    <a
-        href="{{ route('admin.documents') }}"
-        class="w-16 h-16 rounded-xl border border-gray-200 bg-white hover:bg-gray-100 hover:border-blue-300 hover:text-blue-600 flex flex-col items-center justify-center transition">
-
-        <span class="text-2xl leading-none">←</span>
-
-        <span class="text-xs font-medium mt-1">
-            Back
-        </span>
-
-    </a>
-
-</div>
-
-</div>
-
-{{-- ===================================================== --}}
-{{-- DOCUMENT DETAILS --}}
-{{-- ===================================================== --}}
-
-<div class="bg-white rounded-2xl border shadow-sm mb-6">
-
-    <div class="px-6 py-5 border-b">
-
-        <h2 class="text-xl font-bold">
-
-            Document Details
-
-        </h2>
-
-    </div>
-
-    <div class="p-5">
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-
-            <div>
-
-                <p class="text-xs uppercase text-gray-500 tracking-wide">
-
-                    Submitted By
-
-                </p>
-
-                <p class="font-semibold mt-2">
-
-                    {{ $document->submittedBy->full_name }}
-
-                </p>
-
+            <div class="flex items-center gap-2 mb-5">
+                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-blue-50 text-blue-600 text-sm">📄</span>
+                <h2 class="text-base font-semibold text-gray-900">Document Details</h2>
             </div>
 
-<div class="text-center">
-    <p class="text-xs uppercase text-gray-500 tracking-wide">
-        Title
-    </p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-    <p class="font-semibold mt-2">
-        {{ $document->title }}
-    </p>
-</div>
+                <div>
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Submitted By</p>
+                    <p class="text-sm font-semibold text-gray-800">{{ $document->submittedBy->full_name }}</p>
+                </div>
 
+                <div>
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Title</p>
+                    <p class="text-sm font-semibold text-gray-800">{{ $document->title }}</p>
+                </div>
 
-            <div>
+                <div>
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Submitted On</p>
+                    <p class="text-sm font-semibold text-gray-800">{{ $document->submission_date->format('M d, Y h:i A') }}</p>
+                </div>
 
-                <p class="text-xs uppercase text-gray-500 tracking-wide">
+                <div>
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Office</p>
+                    <p class="text-sm font-semibold text-gray-800">{{ optional($document->office)->office_name }}</p>
+                </div>
 
-                    Submitted On
+                <div>
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Category</p>
+                    <p class="text-sm font-semibold text-gray-800">{{ $document->category }}</p>
+                </div>
 
-                </p>
-
-                <p class="font-semibold mt-2">
-
-                    {{ $document->submission_date->format('M d, Y h:i A') }}
-
-                </p>
-
-            </div>
-
-
-            <div>
-
-                <p class="text-xs uppercase text-gray-500 tracking-wide">
-
-                    Office
-
-                </p>
-
-                <p class="font-semibold mt-2">
-
-                    {{ optional($document->office)->office_name }}
-
-                </p>
+                <div>
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Priority</p>
+                    <p class="text-sm font-semibold text-gray-800 flex items-center gap-1.5">
+                        <span class="h-2 w-2 rounded-full {{ $priorityColors[$document->priority] ?? 'bg-gray-400' }}"></span>
+                        {{ $document->priority }}
+                    </p>
+                </div>
 
             </div>
+        </div>
 
-<div class="text-center">
-    <p class="text-xs uppercase text-gray-500 tracking-wide">
-        Category
-    </p>
+        <div class="border-t border-gray-400"></div>
 
-    <p class="font-semibold mt-2">
-        {{ $document->category }}
-    </p>
-</div>
+        {{-- ===================================================== --}}
+        {{-- OCR + REVIEW ACTIONS --}}
+        {{-- ===================================================== --}}
+        <div class="grid grid-cols-1 xl:grid-cols-3">
 
-            <div>
+            {{-- OCR TEXT --}}
+            @if(!Str::contains(strtolower($document->file_type), 'pdf'))
+                <div class="xl:col-span-2 px-8 py-6 xl:border-r border-gray-400">
 
-                <p class="text-xs uppercase text-gray-500 tracking-wide">
+                    <div class="flex items-center gap-2 mb-5">
+                        <span class="flex h-7 w-7 items-center justify-center rounded-full bg-indigo-50 text-indigo-600 text-sm">🔍</span>
+                        <h2 class="text-base font-semibold text-gray-900">OCR Extracted Text</h2>
+                    </div>
 
-                    Priority
+                    <div class="rounded-xl border border-gray-200 bg-gray-50 p-6 max-h-[600px] overflow-y-auto whitespace-pre-wrap text-sm text-gray-700 leading-7">
+                        {{ $document->extracted_text ?: 'No OCR text available.' }}
+                    </div>
 
-                </p>
+                </div>
+            @endif
 
-                <span class="inline-flex mt-2 px-3 py-1 rounded-full
+            {{-- REVIEW ACTIONS --}}
+            <div class="{{ Str::contains(strtolower($document->file_type), 'pdf') ? 'xl:col-span-3' : '' }} px-8 py-6">
 
-                    @switch($document->priority)
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="flex h-7 w-7 items-center justify-center rounded-full bg-purple-50 text-purple-600 text-sm">⚙️</span>
+                    <h2 class="text-base font-semibold text-gray-900">Review Actions</h2>
+                </div>
+                <p class="text-sm text-gray-500 mb-5 ml-9">Select the appropriate action for this document.</p>
 
-                        @case('Urgent')
-                            bg-red-100 text-red-700
-                            @break
+                <div class="space-y-4">
 
-                        @case('High')
-                            bg-orange-100 text-orange-700
-                            @break
+                    {{-- Approve --}}
+                    <button
+                        type="button"
+                        onclick="openApproveModal()"
+                        class="w-full text-left rounded-xl bg-green-600 hover:bg-green-700 text-white px-5 py-4 transition">
+                        <div class="text-base font-semibold">✅ Approve Document</div>
+                        <div class="text-xs text-green-100 mt-1">Finish review without routing.</div>
+                    </button>
 
-                        @case('Normal')
-                            bg-blue-100 text-blue-700
-                            @break
+                    {{-- Approve & Route --}}
+                    <button
+                        type="button"
+                        onclick="openRouteModal()"
+                        class="w-full text-left rounded-xl bg-blue-600 hover:bg-blue-700 text-white px-5 py-4 transition">
+                        <div class="text-base font-semibold">📤 Approve & Route</div>
+                        <div class="text-xs text-blue-100 mt-1">Approve then assign to an employee.</div>
+                    </button>
 
-                        @default
-                            bg-gray-100 text-gray-700
+                    {{-- Return --}}
+                    <button
+                        type="button"
+                        onclick="openReturnModal()"
+                        class="w-full text-left rounded-xl bg-yellow-500 hover:bg-yellow-600 text-white px-5 py-4 transition">
+                        <div class="text-base font-semibold">↩ Return Document</div>
+                        <div class="text-xs text-yellow-100 mt-1">Send document back to submitter.</div>
+                    </button>
 
-                    @endswitch">
-
-                    {{ $document->priority }}
-
-                </span>
+                </div>
 
             </div>
 
@@ -218,243 +177,48 @@
     </div>
 
 </div>
-
-<div class="grid grid-cols-12 gap-6">
-
-    {{-- ===================================================== --}}
-    {{-- OCR TEXT --}}
-    {{-- ===================================================== --}}
-    <div class="col-span-12 xl:col-span-8">
-
-        @if(!Str::contains(strtolower($document->file_type), 'pdf'))
-
-        <div class="bg-white rounded-2xl border shadow-sm">
-
-<div class="border-b px-6 py-5 flex items-center justify-between">
-
-    <h2 class="text-xl font-bold">
-        OCR Extracted Text
-    </h2>
-
-
-</div>
-
-            <div class="p-6">
-
-                <div class="rounded-xl border bg-gray-50 p-6 max-h-[700px] overflow-y-auto whitespace-pre-wrap text-sm leading-7">
-
-                    {{ $document->extracted_text ?: 'No OCR text available.' }}
-
-                </div>
-
-            </div>
-
-        </div>
-
-        @endif
-
-    </div>
-
-  {{-- ===================================================== --}}
-{{-- REVIEW ACTIONS --}}
-{{-- ===================================================== --}}
-<div class="col-span-12 xl:col-span-4">
-
-    <div class="sticky top-6 bg-white rounded-2xl border shadow-sm overflow-hidden">
-
-        {{-- Header --}}
-        <div class="border-b px-6 py-5">
-
-            <h2 class="text-xl font-bold">
-                Review Actions
-            </h2>
-
-            <p class="text-sm text-gray-500 mt-1">
-                Select the appropriate action for this document.
-            </p>
-
-        </div>
-
-        {{-- Buttons --}}
-        <div class="p-6 space-y-4">
-
-            {{-- Approve --}}
-            <button
-                type="button"
-                onclick="openApproveModal()"
-                class="w-full rounded-xl bg-green-600 hover:bg-green-700 text-white px-5 py-4 transition">
-
-                <div class="text-lg font-semibold">
-
-                    ✅ Approve Document
-
-                </div>
-
-                <div class="text-sm text-green-100 mt-1">
-
-                    Finish review without routing
-
-                </div>
-
-            </button>
-
-            {{-- Approve & Route --}}
-            <button
-                type="button"
-                onclick="openRouteModal()"
-                class="w-full rounded-xl bg-blue-600 hover:bg-blue-700 text-white px-5 py-4 transition">
-
-                <div class="text-lg font-semibold">
-
-                    📤 Approve & Route
-
-                </div>
-
-                <div class="text-sm text-blue-100 mt-1">
-
-                    Approve then assign to an employee
-
-                </div>
-
-            </button>
-
-            {{-- Return --}}
-            <button
-                type="button"
-                onclick="openReturnModal()"
-                class="w-full rounded-xl bg-yellow-500 hover:bg-yellow-600 text-white px-5 py-4 transition">
-
-                <div class="text-lg font-semibold">
-
-                    ↩ Return Document
-
-                </div>
-
-                <div class="text-sm text-yellow-100 mt-1">
-
-                    Send document back to submitter
-
-                </div>
-
-            </button>
-
-
-        </div>
-
-    </div>
-
-
-{{-- ===================================================== --}}
-{{-- JAVASCRIPT --}}
-{{-- ===================================================== --}}
-
-<script>
-
-document.addEventListener('DOMContentLoaded', function () {
-
-    const officeSelect = document.getElementById('officeSelect');
-    const employeeSelect = document.getElementById('employeeSelect');
-
-    if (officeSelect && employeeSelect) {
-
-        officeSelect.addEventListener('change', function () {
-
-            const officeId = this.value;
-
-            Array.from(employeeSelect.options).forEach(function(option){
-
-                if(option.value === ''){
-
-                    option.hidden = false;
-                    return;
-
-                }
-
-                option.hidden = option.dataset.office !== officeId;
-
-            });
-
-            employeeSelect.value = '';
-
-        });
-
-    }
-
-});
-
-</script>
 
 {{-- ===================================================== --}}
 {{-- APPROVE MODAL --}}
 {{-- ===================================================== --}}
+<div id="approveModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4">
 
-<div
-    id="approveModal"
-    class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50">
+    <div class="w-full max-w-lg rounded-2xl bg-white shadow-2xl overflow-hidden">
 
-    <div class="w-full max-w-lg rounded-2xl bg-white shadow-2xl">
-
-        {{-- Header --}}
-        <div class="border-b px-6 py-5">
-
-            <h2 class="text-2xl font-bold">
-
-                ✅ Approve Document
-
-            </h2>
-
-            <p class="mt-1 text-sm text-gray-500">
-
-                Approve this document without routing it to another employee.
-
-            </p>
-
+        <div class="px-8 py-6">
+            <h2 class="text-lg font-bold text-green-700">✅ Approve Document</h2>
+            <p class="mt-1 text-sm text-gray-500">Approve this document without routing it to another employee.</p>
         </div>
 
-        <form
-            method="POST"
-            action="{{ route('admin.documents.approve', $document) }}">
+        <div class="border-t border-gray-400"></div>
 
+        <form method="POST" action="{{ route('admin.documents.approve', $document) }}">
             @csrf
 
-            {{-- Body --}}
-            <div class="p-6">
-
-                <label class="block text-sm font-semibold text-gray-700 mb-2">
-
-                    Remarks
-
-                </label>
-
+            <div class="px-8 py-6">
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Remarks</label>
                 <textarea
                     name="remarks"
                     rows="5"
-                    class="w-full rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500"
+                    class="w-full rounded-xl border-gray-300 text-sm focus:border-green-500 focus:ring-green-500"
                     placeholder="Enter approval remarks..."></textarea>
-
             </div>
 
-            {{-- Footer --}}
-            <div class="flex justify-end gap-3 border-t px-6 py-5">
+            <div class="border-t border-gray-400"></div>
 
+            <div class="flex justify-end gap-3 px-8 py-5">
                 <button
                     type="button"
                     onclick="closeApproveModal()"
-                    class="rounded-xl border border-gray-300 px-5 py-2 hover:bg-gray-100 transition">
-
+                    class="px-5 py-2.5 rounded-xl text-sm font-semibold text-gray-600 border border-gray-300 hover:bg-gray-50 transition">
                     Cancel
-
                 </button>
-
-<button
-    type="submit"
-    onclick="closeApproveModal()"
-    class="rounded-xl bg-green-600 px-6 py-2 font-semibold text-white hover:bg-green-700">
-
-    Approve
-
-</button>
-
+                <button
+                    type="submit"
+                    onclick="closeApproveModal()"
+                    class="rounded-xl bg-green-600 hover:bg-green-700 px-6 py-2.5 text-sm font-semibold text-white transition">
+                    Approve
+                </button>
             </div>
 
         </form>
@@ -462,183 +226,82 @@ document.addEventListener('DOMContentLoaded', function () {
     </div>
 
 </div>
-
-<script>
-
-function openApproveModal(){
-
-    document
-        .getElementById('approveModal')
-        .classList.remove('hidden');
-
-    document
-        .getElementById('approveModal')
-        .classList.add('flex');
-
-}
-
-function closeApproveModal(){
-
-    document
-        .getElementById('approveModal')
-        .classList.remove('flex');
-
-    document
-        .getElementById('approveModal')
-        .classList.add('hidden');
-
-}
-
-</script>
 
 {{-- ===================================================== --}}
 {{-- APPROVE & ROUTE MODAL --}}
 {{-- ===================================================== --}}
+<div id="routeModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4">
 
-<div
-    id="routeModal"
-    class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50">
+    <div class="w-full max-w-2xl rounded-2xl bg-white shadow-2xl overflow-hidden">
 
-    <div class="w-full max-w-2xl rounded-2xl bg-white shadow-2xl">
-
-        {{-- Header --}}
-        <div class="border-b px-6 py-5">
-
-            <h2 class="text-2xl font-bold">
-
-                📤 Approve & Route Document
-
-            </h2>
-
-            <p class="mt-1 text-sm text-gray-500">
-
-                Approve this document and assign it to a designated employee.
-
-            </p>
-
+        <div class="px-8 py-6">
+            <h2 class="text-lg font-bold text-blue-700">📤 Approve & Route Document</h2>
+            <p class="mt-1 text-sm text-gray-500">Approve this document and assign it to a designated employee.</p>
         </div>
 
-        <form
-            method="POST"
-            action="{{ route('admin.documents.approve-route',$document) }}">
+        <div class="border-t border-gray-100"></div>
 
+        <form method="POST" action="{{ route('admin.documents.approve-route', $document) }}">
             @csrf
 
-            <div class="p-6 space-y-6">
+            <div class="px-8 py-6 space-y-5">
 
-                {{-- Office --}}
                 <div>
-
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">
-
-                        Destination Office
-
-                    </label>
-
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Destination Office</label>
                     <select
                         id="officeSelect"
                         name="receiver_office_id"
-                        class="w-full rounded-xl border-gray-300"
+                        class="w-full rounded-xl border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500"
                         required>
-
-                        <option value="">
-
-                            Select Office
-
-                        </option>
-
+                        <option value="">Select Office</option>
                         @foreach($offices as $office)
-
-                            <option value="{{ $office->id }}">
-
-                                {{ $office->office_name }}
-
-                            </option>
-
+                            <option value="{{ $office->id }}">{{ $office->office_name }}</option>
                         @endforeach
-
                     </select>
-
                 </div>
 
-                {{-- Employee --}}
                 <div>
-
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">
-
-                        Assign Employee
-
-                    </label>
-
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Assign Employee</label>
                     <select
                         id="employeeSelect"
                         name="assigned_to"
-                        class="w-full rounded-xl border-gray-300"
+                        class="w-full rounded-xl border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500"
                         required>
-
-                        <option value="">
-
-                            Select Employee
-
-                        </option>
-
+                        <option value="">Select Employee</option>
                         @foreach($users as $user)
-
-                            <option
-                                value="{{ $user->id }}"
-                                data-office="{{ $user->office_id }}">
-
-                                {{ $user->full_name }}
-                                ({{ $user->office->office_name }})
-
+                            <option value="{{ $user->id }}" data-office="{{ $user->office_id }}">
+                                {{ $user->full_name }} ({{ $user->office->office_name }})
                             </option>
-
                         @endforeach
-
                     </select>
-
                 </div>
 
-                {{-- Remarks --}}
                 <div>
-
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">
-
-                        Remarks
-
-                    </label>
-
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Remarks</label>
                     <textarea
                         name="remarks"
                         rows="5"
-                        class="w-full rounded-xl border-gray-300"
+                        class="w-full rounded-xl border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500"
                         placeholder="Enter routing remarks..."></textarea>
-
                 </div>
 
             </div>
 
-            {{-- Footer --}}
-            <div class="flex justify-end gap-3 border-t px-6 py-5">
+            <div class="border-t border-gray-100"></div>
 
+            <div class="flex justify-end gap-3 px-8 py-5">
                 <button
                     type="button"
                     onclick="closeRouteModal()"
-                    class="rounded-xl border border-gray-300 px-5 py-2 hover:bg-gray-100">
-
+                    class="px-5 py-2.5 rounded-xl text-sm font-semibold text-gray-600 border border-gray-300 hover:bg-gray-50 transition">
                     Cancel
-
                 </button>
-
                 <button
                     type="submit"
-                 onclick="closeRouteModal()"
-                    class="rounded-xl bg-blue-600 px-6 py-2 font-semibold text-white hover:bg-blue-700">
-
+                    onclick="closeRouteModal()"
+                    class="rounded-xl bg-blue-600 hover:bg-blue-700 px-6 py-2.5 text-sm font-semibold text-white transition">
                     Route Document
-
                 </button>
-
             </div>
 
         </form>
@@ -646,129 +309,49 @@ function closeApproveModal(){
     </div>
 
 </div>
-
-<script>
-
-function openRouteModal(){
-
-    document
-        .getElementById('routeModal')
-        .classList.remove('hidden');
-
-    document
-        .getElementById('routeModal')
-        .classList.add('flex');
-
-}
-
-function closeRouteModal(){
-
-    document
-        .getElementById('routeModal')
-        .classList.remove('flex');
-
-    document
-        .getElementById('routeModal')
-        .classList.add('hidden');
-
-}
-
-document.addEventListener('DOMContentLoaded', function () {
-
-    const office = document.getElementById('officeSelect');
-
-    const employee = document.getElementById('employeeSelect');
-
-    office.addEventListener('change', function () {
-
-        const officeId = this.value;
-
-        [...employee.options].forEach(option => {
-
-            if (!option.dataset.office) return;
-
-            option.hidden = option.dataset.office !== officeId;
-
-        });
-
-        employee.value = '';
-
-    });
-
-});
-
-</script>
 
 {{-- ===================================================== --}}
 {{-- RETURN MODAL --}}
 {{-- ===================================================== --}}
+<div id="returnModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4">
 
-<div
-    id="returnModal"
-    class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50">
+    <div class="w-full max-w-lg rounded-2xl bg-white shadow-2xl overflow-hidden">
 
-    <div class="w-full max-w-lg rounded-2xl bg-white shadow-2xl">
-
-        {{-- Header --}}
-        <div class="border-b px-6 py-5">
-
-            <h2 class="text-2xl font-bold text-yellow-600">
-
-                ↩ Return Document
-
-            </h2>
-
-            <p class="mt-1 text-sm text-gray-500">
-
-                Return this document back to the submitter for revision.
-
-            </p>
-
+        <div class="px-8 py-6">
+            <h2 class="text-lg font-bold text-yellow-600">↩ Return Document</h2>
+            <p class="mt-1 text-sm text-gray-500">Return this document back to the submitter for revision.</p>
         </div>
 
-        <form
-            method="POST"
-            action="{{ route('admin.documents.return', $document) }}">
+        <div class="border-t border-gray-100"></div>
 
+        <form method="POST" action="{{ route('admin.documents.return', $document) }}">
             @csrf
 
-            <div class="p-6">
-
-                <label class="block text-sm font-semibold text-gray-700 mb-2">
-
-                    Remarks
-
-                </label>
-
+            <div class="px-8 py-6">
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Remarks</label>
                 <textarea
                     name="remarks"
                     rows="5"
                     required
-                    class="w-full rounded-xl border-gray-300"
+                    class="w-full rounded-xl border-gray-300 text-sm focus:border-yellow-500 focus:ring-yellow-500"
                     placeholder="State why this document is being returned..."></textarea>
-
             </div>
 
-            <div class="flex justify-end gap-3 border-t px-6 py-5">
+            <div class="border-t border-gray-100"></div>
 
+            <div class="flex justify-end gap-3 px-8 py-5">
                 <button
                     type="button"
                     onclick="closeReturnModal()"
-                    class="rounded-xl border border-gray-300 px-5 py-2 hover:bg-gray-100">
-
+                    class="px-5 py-2.5 rounded-xl text-sm font-semibold text-gray-600 border border-gray-300 hover:bg-gray-50 transition">
                     Cancel
-
                 </button>
-
                 <button
                     type="submit"
-                 onclick="closeReturnModal()"
-                    class="rounded-xl bg-yellow-500 px-6 py-2 font-semibold text-white hover:bg-yellow-600">
-
+                    onclick="closeReturnModal()"
+                    class="rounded-xl bg-yellow-500 hover:bg-yellow-600 px-6 py-2.5 text-sm font-semibold text-white transition">
                     Return Document
-
                 </button>
-
             </div>
 
         </form>
@@ -778,66 +361,50 @@ document.addEventListener('DOMContentLoaded', function () {
 </div>
 
 <script>
-
 function showModal(id){
-
-    const modal=document.getElementById(id);
-
+    const modal = document.getElementById(id);
     modal.classList.remove('hidden');
-
     modal.classList.add('flex');
-
 }
 
 function hideModal(id){
-
-    const modal=document.getElementById(id);
-
+    const modal = document.getElementById(id);
     modal.classList.remove('flex');
-
     modal.classList.add('hidden');
-
 }
 
 function openApproveModal(){ showModal('approveModal'); }
-
 function closeApproveModal(){ hideModal('approveModal'); }
 
 function openRouteModal(){ showModal('routeModal'); }
-
 function closeRouteModal(){ hideModal('routeModal'); }
 
 function openReturnModal(){ showModal('returnModal'); }
-
 function closeReturnModal(){ hideModal('returnModal'); }
 
 document.addEventListener('DOMContentLoaded', function(){
 
-    const office=document.getElementById('officeSelect');
+    const office = document.getElementById('officeSelect');
+    const employee = document.getElementById('employeeSelect');
 
-    const employee=document.getElementById('employeeSelect');
+    if (office && employee) {
 
-    if(office && employee){
+        office.addEventListener('change', function(){
 
-        office.addEventListener('change',function(){
+            const officeId = this.value;
 
-            const officeId=this.value;
-
-            [...employee.options].forEach(option=>{
-
-                if(!option.dataset.office) return;
-
-                option.hidden=option.dataset.office!==officeId;
-
+            [...employee.options].forEach(option => {
+                if (!option.dataset.office) return;
+                option.hidden = option.dataset.office !== officeId;
             });
 
-            employee.value='';
+            employee.value = '';
 
         });
 
     }
 
 });
-
 </script>
+
 </x-layouts.admin-layout>

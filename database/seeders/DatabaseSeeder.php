@@ -14,33 +14,10 @@ class DatabaseSeeder extends Seeder
     /**
      * Seed the application's database.
      */
-    public function run(): void
-    {
-        /*
-        |--------------------------------------------------------------------------
-        | Seed Offices First
-        |--------------------------------------------------------------------------
-        */
-        $this->call([
-            OfficeSeeder::class,
-        ]);
-
-        /*
-        |--------------------------------------------------------------------------
-        | Create Default Admin6 Account
-        |--------------------------------------------------------------------------
-        */
-User::firstOrCreate(
-    ['email' => 'recordkeeper@gmail.com'],
-    [
-        'first_name' => 'Record',
-        'last_name'  => 'Keeper',
-        'email'      => 'recordkeeper@gmail.com',
-        'office_id'  => 1,
-        'role'       => 'record_keeper',
-        'is_active'  => true,
-        'password'   => Hash::make('password'),
-    ]
-);
-    }
+ public function run(): void
+{
+    $this->call([
+        AdminSeeder::class,
+    ]);
+}
 }
