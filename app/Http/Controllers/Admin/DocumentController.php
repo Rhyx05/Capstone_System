@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use App\Helpers\AuditLogger;
 use App\Models\ElectronicFilingCategory;
+use App\Helpers\NotificationHelper;
 
 class DocumentController extends Controller
 {
@@ -223,11 +224,28 @@ AuditLogger::log(
     $document->title .
     '".'
 );
+NotificationHelper::notifyUser(
 
-        return back()->with(
-            'success',
-            'Document approved successfully.'
-        );
+    $document->submitter,
+
+    'Document Approved',
+
+    'Your document "' .
+    $document->title .
+    '" has been approved.',
+
+    'approved',
+
+    $document
+
+);
+
+return redirect()
+    ->route('admin.documents')
+    ->with(
+        'success',
+        'Document approved successfully.'
+    );
     }
 
     /**
@@ -307,10 +325,55 @@ AuditLogger::log(
     '.'
 );
 
-        return back()->with(
-            'success',
-            'Document approved and routed successfully.'
-        );
+/*
+|--------------------------------------------------------------------------
+| Notify Assigned Employee
+|--------------------------------------------------------------------------
+*/
+
+NotificationHelper::notifyUser(
+
+    $employee,
+
+    'New Document Assigned',
+
+    'A document "' .
+    $document->title .
+    '" has been assigned to you.',
+
+    'assigned',
+
+    $document
+
+);
+
+/*
+|--------------------------------------------------------------------------
+| Notify Original Submitter
+|--------------------------------------------------------------------------
+*/
+
+NotificationHelper::notifyUser(
+
+    $document->submitter,
+
+    'Document Approved',
+
+    'Your document "' .
+    $document->title .
+    '" has been approved and routed.',
+
+    'approved',
+
+    $document
+
+);
+return redirect()
+    ->route('admin.documents')
+    ->with(
+        'success',
+        'Document approved and routed successfully.'
+    );
     }
 
     /**
@@ -360,10 +423,28 @@ AuditLogger::log(
     $document->title .
     '".'
 );
-        return back()->with(
-            'success',
-            'Document returned successfully.'
-        );
+
+NotificationHelper::notifyUser(
+
+    $document->submitter,
+
+    'Document Returned',
+
+    'Your document "' .
+    $document->title .
+    '" has been returned for revision.',
+
+    'returned',
+
+    $document
+
+);
+return redirect()
+    ->route('admin.documents')
+    ->with(
+        'success',
+        'Document returned successfully.'
+    );
     }
 
 
@@ -473,6 +554,22 @@ public function storeForward(Request $request)
         ').'
 
     );
+
+    NotificationHelper::notifyUser(
+
+    $receiver,
+
+    'New Document Assigned',
+
+    'Administrator forwarded "' .
+    $document->title .
+    '" to you.',
+
+    'assigned',
+
+    $document
+
+);
 
     return redirect()
         ->route('admin.submit')

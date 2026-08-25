@@ -23,6 +23,9 @@
         'High'   => 'bg-orange-500',
         'Urgent' => 'bg-red-500',
     ];
+
+    // Can the current user still act on this document?
+    $canProcess = $document->assigned_to == auth()->id() || $document->sent_to == auth()->id();
 @endphp
 
     {{-- ================= Single Unified Card ================= --}}
@@ -49,10 +52,13 @@
                     </div>
                 </div>
 
-                <div class="flex justify-center">
+                <div class="flex items-center gap-3">
+
+                    <span class="px-4 py-2 rounded-full text-xs font-semibold border {{ $statusColor }}">
+                        {{ ucwords(str_replace('_', ' ', $document->status)) }}
+                    </span>
 
                     <a
-                    
                         href="{{ route('user.incoming') }}"
                         class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 hover:border-indigo-200 hover:text-indigo-600 transition">
                         <span>←</span> Back
@@ -113,16 +119,16 @@
             </div>
         </div>
 
-        <div class="border-t border-gray-300"></div>
+        <div class="border-t border-gray-100"></div>
 
         {{-- ===================================================== --}}
-        {{-- OCR + PROCESSING ACTIONS + TIMELINE --}}
+        {{-- OCR + PROCESSING ACTIONS/NOTICE + TIMELINE --}}
         {{-- ===================================================== --}}
         <div class="grid grid-cols-1 xl:grid-cols-3">
 
             {{-- OCR TEXT --}}
             @if(!Str::contains(strtolower($document->file_type), 'pdf'))
-                <div class="xl:col-span-2 px-8 py-6 xl:border-r border-gray-300">
+                <div class="xl:col-span-2 px-8 py-6 xl:border-r border-gray-100">
 
                     <div class="flex items-center gap-2 mb-5">
                         <span class="flex h-7 w-7 items-center justify-center rounded-full bg-indigo-50 text-indigo-600 text-sm">🔍</span>
@@ -136,52 +142,75 @@
                 </div>
             @endif
 
-            {{-- RIGHT COLUMN: PROCESSING ACTIONS + TIMELINE STACKED (same width) --}}
+            {{-- RIGHT COLUMN: PROCESSING ACTIONS (or notice) + TIMELINE STACKED (same width) --}}
             <div class="{{ Str::contains(strtolower($document->file_type), 'pdf') ? 'xl:col-span-3' : '' }} flex flex-col">
 
-                {{-- Processing Actions --}}
-                <div class="px-8 py-6">
+                @if($canProcess)
 
-                    <div class="flex items-center gap-2 mb-1">
-                        <span class="flex h-7 w-7 items-center justify-center rounded-full bg-purple-50 text-purple-600 text-sm">⚙️</span>
-                        <h2 class="text-base font-semibold text-gray-900">Processing Actions</h2>
+                    {{-- Processing Actions --}}
+                    <div class="px-8 py-6">
+
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="flex h-7 w-7 items-center justify-center rounded-full bg-purple-50 text-purple-600 text-sm">⚙️</span>
+                            <h2 class="text-base font-semibold text-gray-900">Processing Actions</h2>
+                        </div>
+                        <p class="text-sm text-gray-500 mb-5 ml-9">Select how you want to process this document.</p>
+
+                        <div class="space-y-4">
+
+                            {{-- Approve & Complete --}}
+                            <button
+                                type="button"
+                                onclick="openCompleteModal()"
+                                class="w-full text-left rounded-xl bg-green-600 hover:bg-green-700 text-white px-5 py-4 transition">
+                                <div class="text-base font-semibold">✅ Approve & Complete</div>
+                                <div class="text-xs text-green-100 mt-1">Finish processing this document.</div>
+                            </button>
+
+                            {{-- Approve & Forward --}}
+                            <button
+                                type="button"
+                                onclick="openForwardModal()"
+                                class="w-full text-left rounded-xl bg-blue-600 hover:bg-blue-700 text-white px-5 py-4 transition">
+                                <div class="text-base font-semibold">📤 Approve & Forward</div>
+                                <div class="text-xs text-blue-100 mt-1">Forward to another employee.</div>
+                            </button>
+
+                            {{-- Reject --}}
+                            <button
+                                type="button"
+                                onclick="openRejectModal()"
+                                class="w-full text-left rounded-xl bg-red-600 hover:bg-red-700 text-white px-5 py-4 transition">
+                                <div class="text-base font-semibold">❌ Reject Document</div>
+                                <div class="text-xs text-red-100 mt-1">Reject this document.</div>
+                            </button>
+
+                        </div>
+
                     </div>
-                    <p class="text-sm text-gray-500 mb-5 ml-9">Select how you want to process this document.</p>
 
-                    <div class="space-y-4">
+                @else
 
-                        {{-- Approve & Complete --}}
-                        <button
-                            type="button"
-                            onclick="openCompleteModal()"
-                            class="w-full text-left rounded-xl bg-green-600 hover:bg-green-700 text-white px-5 py-4 transition">
-                            <div class="text-base font-semibold">✅ Approve & Complete</div>
-                            <div class="text-xs text-green-100 mt-1">Finish processing this document.</div>
-                        </button>
+                    {{-- Notice: document no longer actionable by this user --}}
+                    <div class="px-8 py-6">
 
-                        {{-- Approve & Forward --}}
-                        <button
-                            type="button"
-                            onclick="openForwardModal()"
-                            class="w-full text-left rounded-xl bg-blue-600 hover:bg-blue-700 text-white px-5 py-4 transition">
-                            <div class="text-base font-semibold">📤 Approve & Forward</div>
-                            <div class="text-xs text-blue-100 mt-1">Forward to another employee.</div>
-                        </button>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="flex h-7 w-7 items-center justify-center rounded-full bg-gray-100 text-gray-500 text-sm">🔒</span>
+                            <h2 class="text-base font-semibold text-gray-900">Processing Actions</h2>
+                        </div>
 
-                        {{-- Reject --}}
-                        <button
-                            type="button"
-                            onclick="openRejectModal()"
-                            class="w-full text-left rounded-xl bg-red-600 hover:bg-red-700 text-white px-5 py-4 transition">
-                            <div class="text-base font-semibold">❌ Reject Document</div>
-                            <div class="text-xs text-red-100 mt-1">Reject this document.</div>
-                        </button>
+                        <div class="mt-4 rounded-xl border border-gray-200 bg-gray-50 px-4 py-4">
+                            <p class="text-sm text-gray-600 leading-6">
+                                This document has since been reassigned or is no longer active for you.
+                                You can still view its details and history below, but you can no longer take action on it.
+                            </p>
+                        </div>
 
                     </div>
 
-                </div>
+                @endif
 
-                <div class="border-t border-gray-300"></div>
+                <div class="border-t border-gray-100"></div>
 
                 {{-- Document Timeline — same width, stacked below Processing Actions --}}
                 <div class="px-8 py-6">
@@ -319,6 +348,7 @@
 {{-- ===================================================== --}}
 {{-- APPROVE & COMPLETE MODAL --}}
 {{-- ===================================================== --}}
+@if($canProcess)
 <div id="completeModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4">
 
     <div class="w-full max-w-lg rounded-2xl bg-white shadow-2xl overflow-hidden">
@@ -544,5 +574,6 @@ document.addEventListener('DOMContentLoaded', function(){
 
 });
 </script>
+@endif
 
 </x-layouts.employee-layout>

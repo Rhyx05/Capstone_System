@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\DocumentLog;
 use App\Models\ElectronicFilingCategory;
+use App\Models\User;
 
 class Document extends Model
 {
@@ -216,6 +217,19 @@ class Document extends Model
         return $this->hasMany(DocumentLog::class)
                     ->latest();
     }
+
+    /*
+|--------------------------------------------------------------------------
+| Submitter
+|--------------------------------------------------------------------------
+*/
+
+public function submitter(): BelongsTo
+{
+    return $this->belongsTo(User::class, 'submitted_by');
+}
+
+
 
     /*
     |--------------------------------------------------------------------------

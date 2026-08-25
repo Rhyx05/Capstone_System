@@ -23,6 +23,8 @@
     },
     "dependencies": {
         "@inertiajs/react": "^3.6.1",
+        "axios": "^1.19.0",
+        "chart.js": "^4.5.1",
         "react": "^19.2.7",
         "react-dom": "^19.2.7",
         "sweetalert2": "^11.26.25",

@@ -75,9 +75,7 @@
 
                     </div>
 
-                    <span class="rounded-full bg-red-500 px-2 py-0.5 text-[11px] font-semibold text-white">
-                        5
-                    </span>
+
 
                 </a>
             </li>
@@ -156,9 +154,6 @@
 
                     </div>
 
-                    <span class="rounded-full bg-green-500 px-2 py-0.5 text-[11px] font-semibold text-white">
-                        2
-                    </span>
 
                 </a>
             </li>
@@ -181,6 +176,31 @@
 
                 </a>
             </li>
+
+            {{-- Analytics --}}
+<li>
+    <a href="{{ route('admin.analytics') }}"
+       class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition
+       {{ request()->routeIs('admin.analytics*')
+            ? 'bg-white text-indigo-600 shadow-md border border-indigo-100'
+            : 'text-slate-600 hover:bg-white hover:text-indigo-600 hover:shadow-sm' }}">
+
+        <svg class="h-5 w-5"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="2"
+             viewBox="0 0 24 24">
+
+            <path stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M4 19h16M7 16V8m5 8V5m5 11v-3"/>
+
+        </svg>
+
+        <span>Analytics</span>
+
+    </a>
+</li>
 
         </ul>
 

@@ -13,6 +13,9 @@ use App\Http\Controllers\Admin\AnnouncementController;
 use App\Http\Controllers\Admin\AuditController;
 use App\Http\Controllers\Admin\ElectronicFilingController;
 use App\Http\Controllers\Admin\UserManagementController;
+use App\Http\Controllers\Admin\AnalyticsController;
+use App\Http\Controllers\Admin\NotificationController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -167,6 +170,37 @@ Route::post(
 )->name('incoming.complete');
 
 
+    /*
+|--------------------------------------------------------------------------
+| User Notifications
+|--------------------------------------------------------------------------
+*/
+
+Route::get(
+    '/notifications/live',
+    [\App\Http\Controllers\User\NotificationController::class, 'live']
+)->name('notifications.live');
+
+Route::prefix('notifications')
+    ->name('notifications.')
+    ->group(function () {
+
+        Route::get(
+            '/',
+            [\App\Http\Controllers\User\NotificationController::class, 'index']
+        )->name('index');
+
+        Route::post(
+            '/{notification}/read',
+            [\App\Http\Controllers\User\NotificationController::class, 'markAsRead']
+        )->name('read');
+
+        Route::post(
+            '/read-all',
+            [\App\Http\Controllers\User\NotificationController::class, 'markAllAsRead']
+        )->name('readAll');
+
+    });
 
         /*
         |--------------------------------------------------------------------------
@@ -217,6 +251,43 @@ Route::get(
     '/audit/{document}',
     [AuditController::class, 'timeline']
 )->name('audit.timeline');
+
+Route::get(
+    '/analytics',
+    [AnalyticsController::class, 'index']
+)->name('analytics');
+
+Route::get(
+    '/notifications/live',
+    [NotificationController::class, 'live']
+)->name('notifications.live');
+
+/*
+|--------------------------------------------------------------------------
+| Notification
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('notifications')
+    ->name('notifications.')
+    ->group(function () {
+
+        Route::get(
+            '/',
+            [NotificationController::class, 'index']
+        )->name('index');
+
+        Route::post(
+            '/{notification}/read',
+            [NotificationController::class, 'markAsRead']
+        )->name('read');
+
+        Route::post(
+            '/read-all',
+            [NotificationController::class, 'markAllAsRead']
+        )->name('readAll');
+
+    });
 
 /*
 |--------------------------------------------------------------------------

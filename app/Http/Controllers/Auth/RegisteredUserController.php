@@ -15,7 +15,7 @@ use Illuminate\Validation\Rules;
 class RegisteredUserController extends Controller
 {
     /**
-     * Display the registration view.
+     * Display the employee registration view.
      */
     public function create(): View
     {
@@ -25,36 +25,98 @@ class RegisteredUserController extends Controller
     }
 
     /**
-     * Handle an incoming registration request.
+     * Handle an incoming employee registration request.
+     *
+     * Public registration is for employees only.
      *
      * @throws \Illuminate\Validation\ValidationException
      */
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'first_name' => ['required', 'string', 'max:100'],
-            'last_name'  => ['required', 'string', 'max:100'],
-            'role'       => ['required', 'in:user,admin,admin6'],
-            'email'      => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'office_id'  => ['required', 'exists:offices,id'],
-            'password'   => ['required', 'confirmed', Rules\Password::defaults()],
+            'first_name' => [
+                'required',
+                'string',
+                'max:100',
+            ],
+
+            'last_name' => [
+                'required',
+                'string',
+                'max:100',
+            ],
+
+            'email' => [
+                'required',
+                'string',
+                'lowercase',
+                'email',
+                'max:255',
+                'unique:' . User::class,
+            ],
+
+            'office_id' => [
+                'required',
+                'exists:offices,id',
+            ],
+
+            'password' => [
+                'required',
+                'confirmed',
+                Rules\Password::defaults(),
+            ],
         ]);
 
-        // Saves ALL submitted data to the database.
-$user = User::create([
-    'first_name' => $request->first_name,
-    'last_name'  => $request->last_name,
-    'email'      => $request->email,
-    'office_id'  => $request->office_id,
-    'role'       => $request->role,
-    'is_active'  => true,
-    'password'   => Hash::make($request->password),
-]);
+        /*
+        |--------------------------------------------------------------------------
+        | Create Employee Account
+        |--------------------------------------------------------------------------
+        |
+        | The role is deliberately NOT taken from the request.
+        | Every account created through public registration is an employee.
+        |
+        */
+
+        $user = User::create([
+            'first_name' => $request->first_name,
+
+            'last_name' => $request->last_name,
+
+            'email' => $request->email,
+
+            'office_id' => $request->office_id,
+
+            'role' => 'user',
+
+            'is_active' => true,
+
+            'password' => Hash::make($request->password),
+        ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Registered Event
+        |--------------------------------------------------------------------------
+        */
 
         event(new Registered($user));
 
-        // Does NOT log the user in. Sends them to the login page instead.
-        return redirect()->route('login')
-            ->with('status', 'Registration successful! Please log in with your new account.');
+        /*
+        |--------------------------------------------------------------------------
+        | Redirect To Login
+        |--------------------------------------------------------------------------
+        |
+        | The employee is NOT automatically logged in.
+        | A success message is stored in the session and displayed
+        | by the login page.
+        |
+        */
+
+        return redirect()
+            ->route('login')
+            ->with(
+                'registration_success',
+                'Registration successful! Your employee account has been created. You can now log in.'
+            );
     }
 }

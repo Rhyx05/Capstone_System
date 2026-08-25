@@ -81,7 +81,7 @@
                             <th class="px-6 py-3.5 text-left">Date</th>
                             <th class="px-6 py-3.5 text-left">Submitted By (User A)</th>
                             <th class="px-6 py-3.5 text-left">Admin Review</th>
-                            <th class="px-6 py-3.5 text-left">User B</th>
+                            <th class="px-6 py-3.5 text-left">User B(Primary Approval)</th>
                             <th class="px-6 py-3.5 text-left">User C (Secondary Approval)</th>
                             <th class="px-6 py-3.5 text-left">User D (Tertiary Approval)</th>
                         </tr>

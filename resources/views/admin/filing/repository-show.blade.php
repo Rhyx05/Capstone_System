@@ -1,291 +1,170 @@
 <x-layouts.admin-layout>
 
-<div class="space-y-8">
-
-    {{-- ====================================================== --}}
-    {{-- PAGE HEADER --}}
-    {{-- ====================================================== --}}
-
-    <div class="flex items-start justify-between">
-
-        <div>
-
-            <a
-                href="{{ route('admin.filing.repository', $document->filingCategory) }}"
-                class="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700">
-       
-       ← Back to Repository
-
-            </a>
-
-            <h1 class="mt-5 text-3xl font-bold text-gray-900">
-
-                View Archive Document
-
-            </h1>
-
-            <p class="mt-2 text-gray-500">
-
-               Viewing archived document details.
-
-            </p>
-
-        </div>
-
-        <div>
-
-            @php
-
-                $statusColor = match($document->status){
-
-                    'completed' => 'bg-green-100 text-green-700',
-
-                    'archived' => 'bg-blue-100 text-blue-700',
-
-                    default => 'bg-yellow-100 text-yellow-700'
-
-                };
-
-            @endphp
-
-            <span class="inline-flex rounded-full px-5 py-2 text-sm font-semibold {{ $statusColor }}">
-
-                {{ ucwords(str_replace('_',' ',$document->status)) }}
-
-            </span>
-
-        </div>
-
-    </div>
-
-
-{{-- ====================================================== --}}
-{{-- DOCUMENT DETAILS --}}
-{{-- ====================================================== --}}
-
-<div class="overflow-hidden rounded-2xl border bg-white shadow-sm">
-
-    <div class="border-b px-6 py-4">
-
-        <h2 class="text-xl font-bold text-gray-900">
-
-            Document Details
-
-        </h2>
-
-    </div>
-
-    <div class="grid grid-cols-1 gap-x-8 gap-y-5 p-6 md:grid-cols-3">
-
-        {{-- Submitted By --}}
-        <div>
-
-            <p class="text-xs font-medium uppercase tracking-wide text-gray-500">
-
-                Submitted By
-
-            </p>
-
-            <p class="mt-1 text-base font-semibold text-gray-900">
-
-                {{ optional($document->submittedBy)->full_name }}
-
-            </p>
-
-        </div>
-
-        {{-- Title --}}
-        <div>
-
-            <p class="text-xs font-medium uppercase tracking-wide text-gray-500">
-
-                Title
-
-            </p>
-
-            <p class="mt-1 text-base font-semibold text-gray-900">
-
-                {{ $document->title }}
-
-            </p>
-
-        </div>
-
-        {{-- Submitted Date --}}
-        <div>
-
-            <p class="text-xs font-medium uppercase tracking-wide text-gray-500">
-
-                Submitted On
-
-            </p>
-
-            <p class="mt-1 text-base font-semibold text-gray-900">
-
-                {{ optional($document->submission_date)->format('M d, Y h:i A') }}
-
-            </p>
-
-        </div>
-
-        {{-- Office --}}
-        <div>
-
-            <p class="text-xs font-medium uppercase tracking-wide text-gray-500">
-
-                Office
-
-            </p>
-
-            <p class="mt-1 text-base text-gray-800">
-
-                {{ optional($document->office)->office_name }}
-
-            </p>
-
-        </div>
-
-        {{-- Category --}}
-        <div>
-
-            <p class="text-xs font-medium uppercase tracking-wide text-gray-500">
-
-                Category
-
-            </p>
-
-            <p class="mt-1 text-base text-gray-800">
-
-                {{ $document->category }}
-
-            </p>
-
-        </div>
-
-        {{-- Priority --}}
-        <div>
-
-            <p class="text-xs font-medium uppercase tracking-wide text-gray-500">
-
-                Priority
-
-            </p>
-
-            @php
-
-                $priorityColor = match($document->priority){
-
-                    'Urgent' => 'bg-red-100 text-red-700',
-
-                    'High' => 'bg-orange-100 text-orange-700',
-
-                    'Normal' => 'bg-blue-100 text-blue-700',
-
-                    default => 'bg-gray-100 text-gray-700'
-
-                };
-
-            @endphp
-
-            <span class="mt-2 inline-flex rounded-full px-3 py-1 text-xs font-semibold {{ $priorityColor }}">
-
-                {{ $document->priority }}
-
-            </span>
-
-        </div>
-
-        {{-- Tracking Code --}}
-        <div>
-
-            <p class="text-xs font-medium uppercase tracking-wide text-gray-500">
-
-                Tracking Code
-
-            </p>
-
-            <p class="mt-1 font-semibold text-blue-700">
-
-                {{ $document->tracking_code }}
-
-            </p>
-
-        </div>
-
-        {{-- File Type --}}
-        <div>
-
-            <p class="text-xs font-medium uppercase tracking-wide text-gray-500">
-
-                File Type
-
-            </p>
-
-            <p class="mt-1 text-base text-gray-800">
-
-                {{ strtoupper($document->file_type) }}
-
-            </p>
-
-        </div>
-
-        {{-- File Size --}}
-        <div>
-
-            <p class="text-xs font-medium uppercase tracking-wide text-gray-500">
-
-                File Size
-
-            </p>
-
-            <p class="mt-1 text-base text-gray-800">
-
-                {{ number_format($document->file_size / 1024 / 1024, 2) }} MB
-
-            </p>
-
-        </div>
-
-    </div>
-
-</div>
-
-<div class="grid grid-cols-12 gap-6">
-
-    {{-- ===================================================== --}}
-    {{-- OCR / FILE PREVIEW --}}
-    {{-- ===================================================== --}}
-    <div class="col-span-12 xl:col-span-8">
-
-        <div class="bg-white rounded-2xl border shadow-sm">
-
-            <div class="border-b px-6 py-5 flex items-center justify-between">
-                <div>
-                    <h2 class="text-xl font-bold">OCR Extracted Text</h2>
-                    <p class="mt-1 text-sm text-gray-500">{{ $document->file_name }}</p>
+<div class="max-w-6xl mx-auto">
+
+@php
+    $statusColor = match($document->status){
+        'completed' => 'bg-green-50 text-green-700 border-green-200',
+        'archived'  => 'bg-blue-50 text-blue-700 border-blue-200',
+        default     => 'bg-yellow-50 text-yellow-700 border-yellow-200',
+    };
+    $priorityColors = [
+        'Low'    => 'bg-green-500',
+        'Normal' => 'bg-blue-500',
+        'High'   => 'bg-orange-500',
+        'Urgent' => 'bg-red-500',
+    ];
+@endphp
+
+    {{-- ================= Single Unified Card ================= --}}
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+
+        {{-- ===================================================== --}}
+        {{-- HEADER --}}
+        {{-- ===================================================== --}}
+        <div class="relative overflow-hidden bg-gradient-to-r from-indigo-50 via-blue-50 to-white px-8 py-7">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+
+                <div class="flex items-center gap-4">
+                    <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white shadow-sm border border-indigo-100">
+                        <svg class="w-6 h-6 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-900">View Archive Document</h1>
+                        <p class="mt-0.5 text-sm text-gray-500">Viewing archived document details.</p>
+                    </div>
                 </div>
 
-                <a href="{{ asset('storage/'.$document->file_path) }}" download class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16V4m0 12l-4-4m4 4l4-4M4 20h16"/>
-                    </svg>
-                    Download Original
-                </a>
+                <div class="flex items-center gap-3">
+
+                    <span class="px-4 py-2 rounded-full text-xs font-semibold border {{ $statusColor }}">
+                        {{ ucwords(str_replace('_', ' ', $document->status)) }}
+                    </span>
+
+                    
+                        href="{{ route('admin.filing.repository', $document->filingCategory) }}"
+                        class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 hover:border-indigo-200 hover:text-indigo-600 transition">
+                        <span>←</span> Back to Repository
+                    </a>
+
+                </div>
+
+            </div>
+        </div>
+
+        <div class="border-t border-gray-100"></div>
+
+        {{-- ===================================================== --}}
+        {{-- DOCUMENT DETAILS --}}
+        {{-- ===================================================== --}}
+        <div class="px-8 py-6">
+
+            <div class="flex items-center gap-2 mb-5">
+                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-blue-50 text-blue-600 text-sm">📄</span>
+                <h2 class="text-base font-semibold text-gray-900">Document Details</h2>
             </div>
 
-            <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+                <div>
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Submitted By</p>
+                    <p class="text-sm font-semibold text-gray-800">{{ optional($document->submittedBy)->full_name }}</p>
+                </div>
+
+                <div>
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Title</p>
+                    <p class="text-sm font-semibold text-gray-800">{{ $document->title }}</p>
+                </div>
+
+                <div>
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Submitted On</p>
+                    <p class="text-sm font-semibold text-gray-800">{{ optional($document->submission_date)->format('M d, Y h:i A') }}</p>
+                </div>
+
+                <div>
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Office</p>
+                    <p class="text-sm font-semibold text-gray-800">{{ optional($document->office)->office_name }}</p>
+                </div>
+
+                <div>
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Category</p>
+                    <p class="text-sm font-semibold text-gray-800">{{ $document->category }}</p>
+                </div>
+
+                <div>
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Priority</p>
+                    <p class="text-sm font-semibold text-gray-800 flex items-center gap-1.5">
+                        <span class="h-2 w-2 rounded-full {{ $priorityColors[$document->priority] ?? 'bg-gray-400' }}"></span>
+                        {{ $document->priority }}
+                    </p>
+                </div>
+
+                <div>
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Tracking Code</p>
+                    <p class="text-sm font-semibold text-indigo-700">{{ $document->tracking_code }}</p>
+                </div>
+
+                <div>
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">File Type</p>
+                    <p class="text-sm font-semibold text-gray-800">{{ strtoupper($document->file_type) }}</p>
+                </div>
+
+                <div>
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">File Size</p>
+                    <p class="text-sm font-semibold text-gray-800">{{ number_format($document->file_size / 1024 / 1024, 2) }} MB</p>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="border-t border-gray-100"></div>
+
+        {{-- ===================================================== --}}
+        {{-- PREVIEW + TIMELINE --}}
+        {{-- ===================================================== --}}
+        <div class="grid grid-cols-1 xl:grid-cols-3">
+
+            {{-- FILE PREVIEW --}}
+            <div class="xl:col-span-2 px-8 py-6 xl:border-r border-gray-100">
+
+                <div class="flex items-center justify-between mb-5">
+                    <div class="flex items-center gap-2">
+                        <span class="flex h-7 w-7 items-center justify-center rounded-full bg-indigo-50 text-indigo-600 text-sm">🔍</span>
+                        <div>
+                            <h2 class="text-base font-semibold text-gray-900">OCR Extracted Text</h2>
+                            <p class="text-xs text-gray-500">{{ $document->file_name }}</p>
+                        </div>
+                    </div>
+
+                    
+                        href="{{ asset('storage/'.$document->file_path) }}"
+                        download
+                        class="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-indigo-700 bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16V4m0 12l-4-4m4 4l4-4M4 20h16"/>
+                        </svg>
+                        Download Original
+                    </a>
+                </div>
 
                 @if(Str::contains(strtolower($document->file_type), 'pdf'))
 
-                    <iframe src="{{ asset('storage/'.$document->file_path) }}" class="h-[900px] w-full rounded-xl border"></iframe>
+                    <iframe
+                        src="{{ asset('storage/'.$document->file_path) }}"
+                        class="w-full h-[600px] rounded-xl border border-gray-200">
+                    </iframe>
 
                 @elseif(Str::contains(strtolower($document->file_type), 'image'))
 
-                    <img src="{{ asset('storage/'.$document->file_path) }}" class="w-full rounded-xl border">
+                    <img
+                        src="{{ asset('storage/'.$document->file_path) }}"
+                        class="w-full rounded-xl border border-gray-200">
 
                 @else
 
-                    <div class="rounded-xl border bg-gray-50 p-6 max-h-[700px] overflow-y-auto whitespace-pre-wrap text-sm leading-7">
+                    <div class="rounded-xl border border-gray-200 bg-gray-50 p-6 max-h-[600px] overflow-y-auto whitespace-pre-wrap text-sm text-gray-700 leading-7">
                         {{ $document->extracted_text ?: 'No extracted content available for this file.' }}
                     </div>
 
@@ -293,22 +172,13 @@
 
             </div>
 
-        </div>
+            {{-- DOCUMENT TIMELINE --}}
+            <div class="px-8 py-6">
 
-    </div>
-
-{{-- ===================================================== --}}
-    {{-- DOCUMENT TIMELINE --}}
-    {{-- ===================================================== --}}
-    <div class="col-span-12 xl:col-span-4">
-
-        <div class="sticky top-6 bg-white rounded-2xl border shadow-sm overflow-hidden">
-
-            <div class="border-b px-6 py-5">
-                <h2 class="text-xl font-bold">Document Timeline</h2>
-            </div>
-
-            <div class="p-6">
+                <div class="flex items-center gap-2 mb-5">
+                    <span class="flex h-7 w-7 items-center justify-center rounded-full bg-blue-50 text-blue-600 text-sm">🕓</span>
+                    <h2 class="text-base font-semibold text-gray-900">Document Timeline</h2>
+                </div>
 
                 <div class="space-y-0">
 
@@ -316,12 +186,12 @@
                     <div class="flex gap-4">
                         <div class="flex flex-col items-center">
                             <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs text-white">✓</span>
-                            <span class="w-0.5 flex-1 bg-blue-200"></span>
+                            <span class="w-0.5 flex-1 bg-blue-100"></span>
                         </div>
                         <div class="pb-8">
-                            <h3 class="font-semibold">Submitted</h3>
+                            <h3 class="text-sm font-semibold text-gray-900">Submitted</h3>
                             <p class="text-sm text-gray-600">{{ optional($document->submittedBy)->full_name }}</p>
-                            <p class="text-xs text-gray-400">{{ optional($document->submission_date)?->format('M d, Y h:i A') }}</p>
+                            <p class="text-xs text-gray-400 mt-0.5">{{ optional($document->submission_date)?->format('M d, Y h:i A') }}</p>
                         </div>
                     </div>
 
@@ -330,12 +200,12 @@
                     <div class="flex gap-4">
                         <div class="flex flex-col items-center">
                             <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-yellow-500 text-xs text-white">✓</span>
-                            <span class="w-0.5 flex-1 bg-blue-200"></span>
+                            <span class="w-0.5 flex-1 bg-blue-100"></span>
                         </div>
                         <div class="pb-8">
-                            <h3 class="font-semibold">Reviewed</h3>
+                            <h3 class="text-sm font-semibold text-gray-900">Reviewed</h3>
                             <p class="text-sm text-gray-600">{{ optional($document->reviewer)->full_name ?? 'Administrator' }}</p>
-                            <p class="text-xs text-gray-400">{{ $document->reviewed_at->format('M d, Y h:i A') }}</p>
+                            <p class="text-xs text-gray-400 mt-0.5">{{ $document->reviewed_at->format('M d, Y h:i A') }}</p>
                         </div>
                     </div>
                     @endif
@@ -345,12 +215,12 @@
                     <div class="flex gap-4">
                         <div class="flex flex-col items-center">
                             <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-green-600 text-xs text-white">✓</span>
-                            <span class="w-0.5 flex-1 bg-blue-200"></span>
+                            <span class="w-0.5 flex-1 bg-blue-100"></span>
                         </div>
                         <div class="pb-8">
-                            <h3 class="font-semibold">Approved</h3>
+                            <h3 class="text-sm font-semibold text-gray-900">Approved</h3>
                             <p class="text-sm text-gray-600">{{ optional($document->approver)->full_name ?? 'Administrator' }}</p>
-                            <p class="text-xs text-gray-400">{{ $document->approved_at->format('M d, Y h:i A') }}</p>
+                            <p class="text-xs text-gray-400 mt-0.5">{{ $document->approved_at->format('M d, Y h:i A') }}</p>
                         </div>
                     </div>
                     @endif
@@ -360,12 +230,12 @@
                     <div class="flex gap-4">
                         <div class="flex flex-col items-center">
                             <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-xs text-white">✓</span>
-                            <span class="w-0.5 flex-1 bg-blue-200"></span>
+                            <span class="w-0.5 flex-1 bg-blue-100"></span>
                         </div>
                         <div class="pb-8">
-                            <h3 class="font-semibold">Assigned</h3>
+                            <h3 class="text-sm font-semibold text-gray-900">Assigned</h3>
                             <p class="text-sm text-gray-600">{{ optional($document->assignedUser)->full_name }}</p>
-                            <p class="text-xs text-gray-400">{{ $document->assigned_at->format('M d, Y h:i A') }}</p>
+                            <p class="text-xs text-gray-400 mt-0.5">{{ $document->assigned_at->format('M d, Y h:i A') }}</p>
                         </div>
                     </div>
                     @endif
@@ -377,9 +247,9 @@
                             <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-600 text-xs text-white">✓</span>
                         </div>
                         <div>
-                            <h3 class="font-semibold">Completed</h3>
+                            <h3 class="text-sm font-semibold text-gray-900">Completed</h3>
                             <p class="text-sm text-gray-600">Workflow completed successfully.</p>
-                            <p class="text-xs text-gray-400">{{ $document->updated_at->format('M d, Y h:i A') }}</p>
+                            <p class="text-xs text-gray-400 mt-0.5">{{ $document->updated_at->format('M d, Y h:i A') }}</p>
                         </div>
                     </div>
                     @endif

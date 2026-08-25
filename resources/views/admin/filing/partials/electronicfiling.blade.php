@@ -139,9 +139,24 @@
     </div>
 
     {{-- Repository Icon --}}
-    <div class="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center text-2xl mb-3">
-        {{ $category->icon ?: '📁' }}
-    </div>
+@php
+$colors = [
+    'indigo' => 'bg-indigo-50 text-indigo-600',
+    'blue'   => 'bg-blue-50 text-blue-600',
+    'green'  => 'bg-green-50 text-green-600',
+    'yellow' => 'bg-yellow-50 text-yellow-600',
+    'red'    => 'bg-red-50 text-red-600',
+    'purple' => 'bg-purple-50 text-purple-600',
+    'orange' => 'bg-orange-50 text-orange-600',
+];
+@endphp
+
+<div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-3
+{{ $colors[$category->color] ?? 'bg-indigo-50 text-indigo-600' }}">
+
+    {{ $category->icon }}
+
+</div>
 
     {{-- Repository Name --}}
     <h3 class="text-sm font-semibold text-gray-900 truncate">
@@ -155,7 +170,20 @@
 
     {{-- Bottom --}}
     <div class="mt-4">
-        <span class="text-xs bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-full font-medium">
+        @php
+$badgeColors = [
+    'indigo' => 'bg-indigo-50 text-indigo-700',
+    'blue'   => 'bg-blue-50 text-blue-700',
+    'green'  => 'bg-green-50 text-green-700',
+    'yellow' => 'bg-yellow-50 text-yellow-700',
+    'red'    => 'bg-red-50 text-red-700',
+    'purple' => 'bg-purple-50 text-purple-700',
+    'orange' => 'bg-orange-50 text-orange-700',
+];
+@endphp
+
+<span class="text-xs px-2.5 py-1 rounded-full font-medium
+{{ $badgeColors[$category->color] ?? 'bg-indigo-50 text-indigo-700' }}">
             {{ $category->documents_count }}
             {{ Str::plural('Document', $category->documents_count) }}
         </span>

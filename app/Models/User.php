@@ -9,6 +9,8 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\Document;
+use App\Models\Notification;
+
 
 class User extends Authenticatable
 {
@@ -71,5 +73,19 @@ class User extends Authenticatable
     public function documents(): HasMany
 {
     return $this->hasMany(Document::class, 'submitted_by');
+}
+public function submittedDocuments()
+{
+    return $this->hasMany(Document::class,
+        'submitted_by'
+    );
+}
+
+public function notifications()
+{
+      return $this->hasMany(
+        Notification::class,
+        'user_id'
+    );
 }
 }

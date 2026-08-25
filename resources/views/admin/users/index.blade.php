@@ -1,375 +1,229 @@
 <x-layouts.admin-layout>
 
-<div class="space-y-8">
+<div class="max-w-6xl mx-auto">
 
-    {{-- ========================================================= --}}
-    {{-- PAGE HEADER --}}
-    {{-- ========================================================= --}}
+    {{-- ================= Single Unified Card ================= --}}
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
 
-    <div>
+        {{-- Header --}}
+        <div class="relative overflow-hidden bg-gradient-to-r from-indigo-50 via-blue-50 to-white px-8 py-7">
+            <div class="flex items-center gap-4">
+                <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white shadow-sm border border-indigo-100">
+                    <svg class="w-6 h-6 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-1.13a4 4 0 10-4-4 4 4 0 004 4zm6 0a4 4 0 10-4-4" />
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-gray-900">User Management</h1>
+                    <p class="mt-0.5 text-sm text-gray-500">Manage all registered employee and administrator accounts.</p>
+                </div>
+            </div>
+        </div>
 
-        <h1 class="text-3xl font-bold text-gray-900">
+        <div class="border-t border-gray-100"></div>
 
-            User Management
+        {{-- Statistics --}}
+        <div class="grid grid-cols-2 lg:grid-cols-3 gap-4 p-6">
 
-        </h1>
+            <div class="flex items-center gap-4 rounded-xl border border-gray-100 p-4">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 text-lg">👥</div>
+                <div>
+                    <p class="text-xs font-medium text-gray-500">Total Accounts</p>
+                    <h2 class="text-2xl font-bold text-gray-900">{{ $totalUsers }}</h2>
+                </div>
+            </div>
 
-        <p class="mt-2 text-gray-500">
+            <div class="flex items-center gap-4 rounded-xl border border-gray-100 p-4">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-green-50 text-green-600 text-lg">✅</div>
+                <div>
+                    <p class="text-xs font-medium text-gray-500">Active Accounts</p>
+                    <h2 class="text-2xl font-bold text-gray-900">{{ $activeUsers }}</h2>
+                </div>
+            </div>
 
-            Manage all registered employee and administrator accounts.
-
-        </p>
-
-    </div>
-
-    {{-- ========================================================= --}}
-    {{-- SUMMARY CARDS --}}
-    {{-- ========================================================= --}}
-
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-        <div class="rounded-2xl bg-white border shadow-sm p-6">
-
-            <p class="text-gray-500 text-sm">
-
-                Total Accounts
-
-            </p>
-
-            <h2 class="mt-2 text-4xl font-bold text-blue-700">
-
-                {{ $totalUsers }}
-
-            </h2>
+            <div class="flex items-center gap-4 rounded-xl border border-gray-100 p-4">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-red-50 text-red-600 text-lg">⛔</div>
+                <div>
+                    <p class="text-xs font-medium text-gray-500">Inactive Accounts</p>
+                    <h2 class="text-2xl font-bold text-gray-900">{{ $inactiveUsers }}</h2>
+                </div>
+            </div>
 
         </div>
 
-        <div class="rounded-2xl bg-white border shadow-sm p-6">
+        <div class="border-t border-gray-100"></div>
 
-            <p class="text-gray-500 text-sm">
+        {{-- Filters: search + office + role + status — auto-filters the table live --}}
+        <form method="GET" action="{{ url()->current() }}" id="filterForm" class="px-6 py-5">
+            <div class="flex flex-col md:flex-row md:items-center gap-3">
 
-                Active Accounts
-
-            </p>
-
-            <h2 class="mt-2 text-4xl font-bold text-green-600">
-
-                {{ $activeUsers }}
-
-            </h2>
-
-        </div>
-
-        <div class="rounded-2xl bg-white border shadow-sm p-6">
-
-            <p class="text-gray-500 text-sm">
-
-                Inactive Accounts
-
-            </p>
-
-            <h2 class="mt-2 text-4xl font-bold text-red-600">
-
-                {{ $inactiveUsers }}
-
-            </h2>
-
-        </div>
-
-    </div>
-
-    {{-- ========================================================= --}}
-    {{-- SEARCH + FILTERS --}}
-    {{-- ========================================================= --}}
-
-    <div class="bg-white rounded-2xl border shadow-sm p-6">
-
-        <form method="GET">
-
-            <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
-
-                {{-- Search --}}
                 <input
                     type="text"
                     name="search"
+                    id="searchInput"
                     value="{{ request('search') }}"
                     placeholder="Search user..."
-                    class="rounded-xl border-gray-300 focus:ring-blue-500 focus:border-blue-500">
+                    autocomplete="off"
+                    class="flex-1 rounded-xl border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
 
-                {{-- Office --}}
-                <select
-                    name="office"
-                    class="rounded-xl border-gray-300 focus:ring-blue-500">
-
-                    <option value="">
-
-                        All Offices
-
-                    </option>
-
+                <select name="office" id="officeSelect" class="rounded-xl border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500 md:w-48">
+                    <option value="">All Offices</option>
                     @foreach($offices as $office)
-
-                        <option
-                            value="{{ $office->id }}"
-                            {{ request('office')==$office->id ? 'selected':'' }}>
-
+                        <option value="{{ $office->id }}" @selected(request('office')==$office->id)>
                             {{ $office->office_name }}
-
                         </option>
-
                     @endforeach
-
                 </select>
 
-                {{-- Role --}}
-                <select
-                    name="role"
-                    class="rounded-xl border-gray-300">
-
-                    <option value="">
-
-                        All Roles
-
-                    </option>
-
-                    <option
-                        value="admin"
-                        {{ request('role')=='admin'?'selected':'' }}>
-
-                        Administrator
-
-                    </option>
-
-                    <option
-                        value="user"
-                        {{ request('role')=='user'?'selected':'' }}>
-
-                        Employee
-
-                    </option>
-
+                <select name="role" id="roleSelect" class="rounded-xl border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500 md:w-44">
+                    <option value="">All Roles</option>
+                    <option value="admin" @selected(request('role')=='admin')>Administrator</option>
+                    <option value="user" @selected(request('role')=='user')>Employee</option>
                 </select>
 
-                {{-- Status --}}
-                <select
-                    name="status"
-                    class="rounded-xl border-gray-300">
-
-                    <option value="">
-
-                        All Status
-
-                    </option>
-
-                    <option
-                        value="1"
-                        {{ request('status')==='1'?'selected':'' }}>
-
-                        Active
-
-                    </option>
-
-                    <option
-                        value="0"
-                        {{ request('status')==='0'?'selected':'' }}>
-
-                        Inactive
-
-                    </option>
-
+                <select name="status" id="statusSelect" class="rounded-xl border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500 md:w-40">
+                    <option value="">All Status</option>
+                    <option value="1" @selected(request('status')==='1')>Active</option>
+                    <option value="0" @selected(request('status')==='0')>Inactive</option>
                 </select>
-
-                <button
-                    class="rounded-xl bg-blue-600 text-white hover:bg-blue-700">
-
-                    Search
-
-                </button>
 
             </div>
-
         </form>
 
-    </div>
-
-    {{-- ========================================================= --}}
-    {{-- USER TABLE --}}
-    {{-- ========================================================= --}}
-
-    <div class="bg-white rounded-2xl border shadow-sm overflow-hidden">
-
-        <div class="overflow-x-auto">
-
-            <table class="min-w-full">
-
-                <thead class="bg-gray-50">
-
-                    <tr>
-
-                        <th class="px-6 py-4 text-left font-semibold">
-
-                            Name
-
-                        </th>
-
-                        <th class="px-6 py-4 text-left font-semibold">
-
-                            Email
-
-                        </th>
-
-                        <th class="px-6 py-4 text-left font-semibold">
-
-                            Office
-
-                        </th>
-
-                        <th class="px-6 py-4 text-center font-semibold">
-
-                            Role
-
-                        </th>
-
-                        <th class="px-6 py-4 text-center font-semibold">
-
-                            Status
-
-                        </th>
-
-                        <th class="px-6 py-4 text-center font-semibold">
-
-                            Registered
-
-                        </th>
-
-                        <th class="px-6 py-4 text-center font-semibold">
-
-                            Action
-
-                        </th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                @forelse($users as $user)
-
-                    <tr class="border-t hover:bg-gray-50">
-
-                        <td class="px-6 py-4 font-medium">
-
-                            {{ $user->first_name }}
-
-                            {{ $user->last_name }}
-
-                        </td>
-
-                        <td class="px-6 py-4">
-
-                            {{ $user->email }}
-
-                        </td>
-
-                        <td class="px-6 py-4">
-
-                            {{ optional($user->office)->office_name }}
-
-                        </td>
-
-                        <td class="px-6 py-4 text-center">
-
-                            @if($user->role=='admin')
-
-                                <span class="rounded-full bg-purple-100 text-purple-700 px-3 py-1 text-xs font-semibold">
-
-                                    Administrator
-
-                                </span>
-
-                            @else
-
-                                <span class="rounded-full bg-blue-100 text-blue-700 px-3 py-1 text-xs font-semibold">
-
-                                    Employee
-
-                                </span>
-
-                            @endif
-
-                        </td>
-
-                        <td class="px-6 py-4 text-center">
-
-                            @if($user->is_active)
-
-                                <span class="rounded-full bg-green-100 text-green-700 px-3 py-1 text-xs font-semibold">
-
-                                    Active
-
-                                </span>
-
-                            @else
-
-                                <span class="rounded-full bg-red-100 text-red-700 px-3 py-1 text-xs font-semibold">
-
-                                    Inactive
-
-                                </span>
-
-                            @endif
-
-                        </td>
-
-                        <td class="px-6 py-4 text-center">
-
-                            {{ $user->created_at->format('M d, Y') }}
-
-                        </td>
-
-                        <td class="px-6 py-4 text-center">
-
-                            <a
-                                href="{{ route('admin.users.show',$user) }}"
-                                class="inline-flex rounded-xl bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700">
-
-                                View
-
-                            </a>
-
-                        </td>
-
-                    </tr>
-
-                @empty
-
-                    <tr>
-
-                        <td colspan="7" class="py-10 text-center text-gray-500">
-
-                            No users found.
-
-                        </td>
-
-                    </tr>
-
-                @endforelse
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-        <div class="border-t px-6 py-4">
-
-            {{ $users->links() }}
-
-        </div>
+        <div class="border-t border-gray-100"></div>
+
+        {{-- Table --}}
+        @if($users->count())
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+
+                    <thead>
+                        <tr class="bg-gray-50 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                            <th class="px-6 py-3.5 text-left">Name</th>
+                            <th class="px-6 py-3.5 text-left">Email</th>
+                            <th class="px-6 py-3.5 text-left">Office</th>
+                            <th class="px-6 py-3.5 text-center">Role</th>
+                            <th class="px-6 py-3.5 text-center">Status</th>
+                            <th class="px-6 py-3.5 text-center">Registered</th>
+                            <th class="px-6 py-3.5 text-center">Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="divide-y divide-gray-100">
+
+                        @foreach($users as $user)
+                            <tr class="hover:bg-gray-50 transition">
+
+                                <td class="px-6 py-4 font-semibold text-gray-800">
+                                    {{ $user->first_name }} {{ $user->last_name }}
+                                </td>
+
+                                <td class="px-6 py-4 text-gray-600">
+                                    {{ $user->email }}
+                                </td>
+
+                                <td class="px-6 py-4 text-gray-600">
+                                    {{ optional($user->office)->office_name }}
+                                </td>
+
+                                <td class="px-6 py-4 text-center">
+                                    @if($user->role == 'admin')
+                                        <span class="px-3 py-1 rounded-full text-xs font-semibold border bg-purple-50 text-purple-700 border-purple-200">
+                                            Administrator
+                                        </span>
+                                    @else
+                                        <span class="px-3 py-1 rounded-full text-xs font-semibold border bg-blue-50 text-blue-700 border-blue-200">
+                                            Employee
+                                        </span>
+                                    @endif
+                                </td>
+
+                                <td class="px-6 py-4 text-center">
+                                    @if($user->is_active)
+                                        <span class="px-3 py-1 rounded-full text-xs font-semibold border bg-green-50 text-green-700 border-green-200">
+                                            Active
+                                        </span>
+                                    @else
+                                        <span class="px-3 py-1 rounded-full text-xs font-semibold border bg-red-50 text-red-700 border-red-200">
+                                            Inactive
+                                        </span>
+                                    @endif
+                                </td>
+
+                                <td class="px-6 py-4 text-center text-gray-500 text-xs">
+                                    {{ $user->created_at->format('M d, Y') }}
+                                </td>
+
+                                <td class="px-6 py-4 text-center">
+                                    <a
+                                        href="{{ route('admin.users.show', $user) }}"
+                                        class="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl transition">
+                                        View
+                                    </a>
+                                </td>
+
+                            </tr>
+                        @endforeach
+
+                    </tbody>
+
+                </table>
+            </div>
+
+            @if($users->hasPages())
+                <div class="border-t border-gray-100 px-6 py-4">
+                    {{ $users->appends(request()->query())->links() }}
+                </div>
+            @endif
+
+        @else
+
+            {{-- Empty State --}}
+            <div class="px-8 py-16 text-center">
+                <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gray-50 border border-gray-200 text-2xl mb-4">
+                    👥
+                </div>
+                <h2 class="text-base font-semibold text-gray-900">No Users Found</h2>
+                <p class="text-sm text-gray-500 mt-1">
+                    @if(request('search') || request('office') || request('role') || request('status') !== null)
+                        No users match your search or filter.
+                    @else
+                        No accounts have been registered yet.
+                    @endif
+                </p>
+            </div>
+
+        @endif
 
     </div>
 
 </div>
+
+<script>
+(function () {
+    const form = document.getElementById('filterForm');
+    const searchInput = document.getElementById('searchInput');
+    const officeSelect = document.getElementById('officeSelect');
+    const roleSelect = document.getElementById('roleSelect');
+    const statusSelect = document.getElementById('statusSelect');
+    let debounceTimer;
+
+    // Live filter as the user types (debounced so it doesn't submit on every keystroke)
+    searchInput.addEventListener('input', function () {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(function () {
+            form.submit();
+        }, 500);
+    });
+
+    // Instant filter when any dropdown changes
+    [officeSelect, roleSelect, statusSelect].forEach(function (select) {
+        select.addEventListener('change', function () {
+            form.submit();
+        });
+    });
+})();
+</script>
 
 </x-layouts.admin-layout>

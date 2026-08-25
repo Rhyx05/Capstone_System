@@ -18,9 +18,6 @@
 
 @include('admin.filing.partials.create-modal')
 
-@include('admin.filing.partials.edit-modal')
-
-@include('admin.filing.modals.delete')
 
 
 {{-- ========================================================= --}}

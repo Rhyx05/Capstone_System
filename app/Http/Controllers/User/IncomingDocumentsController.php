@@ -10,6 +10,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Helpers\AuditLogger;
+use App\Helpers\NotificationHelper; 
 
 class IncomingDocumentsController extends Controller
 {
@@ -118,11 +119,17 @@ public function index(Request $request)
  */
 public function show(Document $document)
 {
-abort_unless(
-    $document->assigned_to == Auth::id() ||
-    $document->sent_to == Auth::id(),
-    403
-);
+$allowed =
+
+    $document->assigned_to == Auth::id()
+
+    || $document->sent_to == Auth::id()
+
+    || $document->logs()
+        ->where('user_id', Auth::id())
+        ->exists();
+
+abort_unless($allowed, 403);
 
     $document->load([
         'submittedBy',
@@ -364,6 +371,23 @@ AuditLogger::log(
     $office->office_name .
     ').'
 );
+
+NotificationHelper::notifyUser(
+
+    $employee,
+
+    'New Document Assigned',
+
+    Auth::user()->full_name .
+    ' forwarded "' .
+    $document->title .
+    '" to you.',
+
+    'assigned',
+
+    $document
+
+);
      return redirect()
     ->route('user.incoming')
     ->with(
@@ -408,6 +432,22 @@ public function reject(Request $request, Document $document)
         '".'
     );
 
+    NotificationHelper::notifyUser(
+
+    $document->submitter,
+
+    'Document Rejected',
+
+    'Your document "' .
+    $document->title .
+    '" has been rejected.',
+
+    'rejected',
+
+    $document
+
+);
+
     return redirect()
         ->route('user.incoming')
         ->with('success', 'Document rejected successfully.');
@@ -418,6 +458,8 @@ public function reject(Request $request, Document $document)
      */
     public function complete(Request $request, Document $document)
     {
+
+    
 abort_unless(
     $document->assigned_to == Auth::id() ||
     $document->sent_to == Auth::id(),
@@ -460,6 +502,21 @@ AuditLogger::log(
     '".'
 );
 
+NotificationHelper::notifyUser(
+
+    $document->submitter,
+
+    'Document Completed',
+
+    'Your document "' .
+    $document->title .
+    '" has been completed.',
+
+    'completed',
+
+    $document
+
+);
         return redirect()
             ->route('user.incoming')
             ->with(

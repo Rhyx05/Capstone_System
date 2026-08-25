@@ -9,6 +9,7 @@ use App\Services\DocumentTextExtractor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Helpers\AuditLogger;
+use App\Helpers\NotificationHelper;
 
 class SubmitDocumentController extends Controller
 {
@@ -154,6 +155,16 @@ AuditLogger::log(
     ' submitted document "' .
     $document->title .
     '".'
+);
+
+NotificationHelper::notifyAdmins(
+    'New Document Submitted',
+    Auth::user()->full_name .
+    ' submitted "' .
+    $document->title .
+    '".',
+    'document',
+    $document
 );
 
 return redirect()

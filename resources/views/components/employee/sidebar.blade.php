@@ -71,9 +71,6 @@
 
                     </div>
 
-                    <span class="rounded-full bg-indigo-600 px-2 py-0.5 text-[11px] font-semibold text-white">
-                        2
-                    </span>
 
                 </a>
             </li>
@@ -97,9 +94,6 @@
 
                     </div>
 
-                    <span class="rounded-full bg-red-500 px-2 py-0.5 text-[11px] font-semibold text-white">
-                        3
-                    </span>
 
                 </a>
             </li>

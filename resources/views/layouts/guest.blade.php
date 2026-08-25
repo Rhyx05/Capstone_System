@@ -73,7 +73,7 @@ class="relative min-h-screen overflow-hidden bg-gradient-to-br from-sky-900 via-
 
                     <h2 class="text-3xl font-bold leading-tight">
 
-                        Document Tracking and Electronic Filing System
+                        Digital Document Workflow and Archiving System with OCR and Electronic Filing
 
                     </h2>
 
@@ -121,7 +121,7 @@ class="relative min-h-screen overflow-hidden bg-gradient-to-br from-sky-900 via-
 
                             <p class="text-sm text-gray-500">
 
-                                Document Tracking System
+                                Digital Document Workflow and Archiving System with OCR and Electronic Filing
 
                             </p>
 
