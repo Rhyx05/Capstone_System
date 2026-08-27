@@ -100,10 +100,6 @@
 
                     </div>
 
-                    <span class="rounded-full bg-amber-500 px-2 py-0.5 text-[11px] font-semibold text-white">
-                        {{ \App\Models\ElectronicFilingCategory::count() }}
-                    </span>
-
                 </a>
             </li>
 
@@ -126,10 +122,6 @@
                         <span>User Management</span>
 
                     </div>
-
-                    <span class="rounded-full bg-indigo-600 px-2 py-0.5 text-[11px] font-semibold text-white">
-                        {{ \App\Models\User::count() }}
-                    </span>
 
                 </a>
             </li>

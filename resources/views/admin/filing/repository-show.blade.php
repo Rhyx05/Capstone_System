@@ -43,7 +43,7 @@
                         {{ ucwords(str_replace('_', ' ', $document->status)) }}
                     </span>
 
-                    
+                    <a
                         href="{{ route('admin.filing.repository', $document->filingCategory) }}"
                         class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 hover:border-indigo-200 hover:text-indigo-600 transition">
                         <span>←</span> Back to Repository
@@ -138,7 +138,7 @@
                         </div>
                     </div>
 
-                    
+                    <a
                         href="{{ asset('storage/'.$document->file_path) }}"
                         download
                         class="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-indigo-700 bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 transition">
