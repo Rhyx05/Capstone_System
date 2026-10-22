@@ -3,12 +3,36 @@
 <div>
 
     {{-- ========================================================= --}}
+    {{-- ALERT MESSAGES --}}
+    {{-- ========================================================= --}}
+
+    @if(session('success'))
+        <div class="max-w-6xl mx-auto mb-4 p-4 rounded-xl bg-green-100 border border-green-200 text-green-700 text-sm font-medium">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="max-w-6xl mx-auto mb-4 p-4 rounded-xl bg-red-100 border border-red-200 text-red-700 text-sm font-medium">
+            {{ session('error') }}
+        </div>
+    @endif
+
+    @if($errors->any())
+        <div class="max-w-6xl mx-auto mb-4 p-4 rounded-xl bg-red-100 border border-red-200 text-red-700 text-sm">
+            <ul class="list-disc list-inside">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    {{-- ========================================================= --}}
     {{-- REPOSITORIES --}}
     {{-- ========================================================= --}}
 
     @include('admin.filing.partials.electronicfiling')
-
-
 
 </div>
 
@@ -18,7 +42,9 @@
 
 @include('admin.filing.partials.create-modal')
 
+@include('admin.filing.partials.edit-modal')
 
+@include('admin.filing.partials.delete-modal')
 
 {{-- ========================================================= --}}
 {{-- PAGE SCRIPTS --}}
@@ -60,28 +86,20 @@ function closeEditCategoryModal() {
 
 }
 
-function openDeleteCategoryModal(id, name) {
+function openDeleteRepositoryModal(id, name) {
+    const modal = document.getElementById('deleteRepositoryModal');
+    const form = document.getElementById('deleteRepositoryForm');
 
-    document
-        .getElementById('deleteRepositoryModal')
-        .classList.remove('hidden');
+    // Same URL structure as the working edit function.
+    form.action = "{{ url('admin/filing') }}/" + id;
 
-    document
-        .getElementById('deleteRepositoryName')
-        .innerText = name;
+    document.getElementById('delete-repository-name').textContent = name;
 
-    document
-        .getElementById('deleteForm')
-        .action = "{{ url('admin/filing') }}/" + id;
-
+    modal.classList.remove('hidden');
 }
 
-function closeDeleteCategoryModal() {
-
-    document
-        .getElementById('deleteRepositoryModal')
-        .classList.add('hidden');
-
+function closeDeleteRepositoryModal() {
+    document.getElementById('deleteRepositoryModal').classList.add('hidden');
 }
 
 function openArchiveDocumentModal(documentId) {

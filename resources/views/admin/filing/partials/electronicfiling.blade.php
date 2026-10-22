@@ -113,27 +113,29 @@
             id="menu-{{ $category->id }}"
             class="hidden absolute right-0 top-10 w-48 bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden z-50">
 
-            <button
-                type="button"
-                onclick="event.stopPropagation(); openEditCategoryModal(
-                    '{{ $category->id }}',
-                    '{{ addslashes($category->name) }}',
-                    '{{ addslashes($category->description) }}'
-                )"
-                class="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
-                ✏ Edit Repository
-            </button>
+<button
+    type="button"
+    onclick="event.stopPropagation(); toggleMenu({{ $category->id }}); openEditCategoryModal(
+        {{ $category->id }},
+        @js($category->name),
+        @js($category->description ?? ''),
+        @js($category->icon),
+        @js($category->color)
+    )"
+    class="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+    ✏ Edit Repository
+</button>
 
-            <button
-                type="button"
-                onclick="event.stopPropagation(); openDeleteCategoryModal(
-                    '{{ $category->id }}',
-                    '{{ addslashes($category->name) }}'
-                )"
-                class="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50">
-                🗑 Delete Repository
-            </button>
-
+<button
+    type="button"
+    onclick="event.stopPropagation();
+        openDeleteRepositoryModal(
+            {{ $category->id }},
+            @js($category->name)
+        )"
+    class="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50">
+    🗑 Delete Repository
+</button>
         </div>
 
     </div>

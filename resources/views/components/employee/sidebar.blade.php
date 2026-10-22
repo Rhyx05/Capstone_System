@@ -115,22 +115,7 @@
                 </a>
             </li>
 
-            {{-- Settings --}}
-            <li>
-                <a href="{{ route('user.settings') }}"
-                   class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition
-                   {{ request()->routeIs('user.settings')
-                        ? 'bg-white text-indigo-600 shadow-md border border-indigo-100'
-                        : 'text-slate-600 hover:bg-white hover:text-indigo-600 hover:shadow-sm' }}">
-
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M12 15.5A3.5 3.5 0 1012 8.5a3.5 3.5 0 000 7zm7-3.5l2-1-2-1-.5-2.1-2-.6-1-2-2.1.5L12 3l-1.4 1.8-2.1-.5-1 2-2 .6L5 10l-2 1 2 1 .5 2.1 2 .6 1 2 2.1-.5L12 21l1.4-1.8 2.1.5 1-2 2-.6L19 12z"/>
-                    </svg>
-
-                    <span>Settings</span>
-                </a>
-            </li>
+         
 
         </ul>
 
