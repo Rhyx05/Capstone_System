@@ -13,26 +13,21 @@ class DocumentTextExtractor
      * @param string $absolutePath
      * @return string
      */
-    public function extract(string $absolutePath): string
-    {
-        if (! file_exists($absolutePath)) {
-            return 'Document file not found.';
-        }
-
-        $extension = strtolower(pathinfo($absolutePath, PATHINFO_EXTENSION));
-
-        return match ($extension) {
-
-            'pdf'  => $this->extractPdf($absolutePath),
-
-            'docx' => $this->extractDocx($absolutePath),
-
-            'doc'  => $this->extractDoc($absolutePath),
-
-            default => 'Preview is not available for this file type.',
-
-        };
+public function extract(string $absolutePath, ?string $extension = null): string
+{
+    if (! file_exists($absolutePath)) {
+        return 'Document file not found.';
     }
+
+    $extension = strtolower($extension ?: pathinfo($absolutePath, PATHINFO_EXTENSION));
+
+    return match ($extension) {
+        'pdf'  => $this->extractPdf($absolutePath),
+        'docx' => $this->extractDocx($absolutePath),
+        'doc'  => $this->extractDoc($absolutePath),
+        default => 'Preview is not available for this file type.',
+    };
+}
 
     /**
      * Extract text from PDF.
@@ -61,48 +56,36 @@ class DocumentTextExtractor
     /**
      * Extract text from DOCX.
      */
-    private function extractDocx(string $path): string
-    {
-        try {
-
-            $phpWord = IOFactory::load($path);
-
-            $text = '';
-
-            foreach ($phpWord->getSections() as $section) {
-
-                foreach ($section->getElements() as $element) {
-
-                    if (method_exists($element, 'getText')) {
-
-                        $text .= $element->getText().PHP_EOL;
-
-                    }
-
-                    if (method_exists($element, 'getElements')) {
-
-                        foreach ($element->getElements() as $child) {
-
-                            if (method_exists($child, 'getText')) {
-
-                                $text .= $child->getText().PHP_EOL;
-
-                            }
-                        }
-                    }
-                }
-            }
-
-            return trim($text) !== ''
-                ? trim($text)
-                : 'No readable text found in this Word document.';
-
-        } catch (\Throwable $e) {
-
-            return 'Unable to read Word document: '.$e->getMessage();
-
+   private function extractDocx(string $path): string
+{
+    try {
+        if (! class_exists(\ZipArchive::class)) {
+            return 'Unable to read Word document: PHP zip extension is not installed on this server.';
         }
+
+        $zip = new \ZipArchive();
+
+        if ($zip->open($path) !== true) {
+            return 'Unable to open the Word document.';
+        }
+
+        $xml = $zip->getFromName('word/document.xml');
+        $zip->close();
+
+        if ($xml === false) {
+            return 'Unable to read Word document: word/document.xml not found.';
+        }
+
+        $xml = str_replace(['</w:p>', '<w:br/>', '<w:tab/>'], ["</w:p>\n", "\n", "\t"], $xml);
+
+        $text = trim(html_entity_decode(strip_tags($xml), ENT_QUOTES | ENT_XML1, 'UTF-8'));
+
+        return $text !== '' ? $text : 'No readable text found in this Word document.';
+
+    } catch (\Throwable $e) {
+        return 'Unable to read Word document: ' . $e->getMessage();
     }
+}
 
     /**
      * Basic extraction for legacy DOC files.

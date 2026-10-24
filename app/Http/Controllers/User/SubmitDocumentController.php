@@ -62,19 +62,13 @@ class SubmitDocumentController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $file = $request->file('document');
+ $file = $request->file('document');
+$extension = strtolower($file->getClientOriginalExtension());
 
-        $path = $file->store('documents', 'public');
+// Extract from the uploaded temp file, before storing
+$extractedText = $extractor->extract($file->getRealPath(), $extension);
 
-        /*
-        |--------------------------------------------------------------------------
-        | Extract Document Contents
-        |--------------------------------------------------------------------------
-        */
-
-        $absolutePath = storage_path('app/public/' . $path);
-
-        $extractedText = $extractor->extract($absolutePath);
+$path = $file->store('documents', 'public');
 
         /*
         |--------------------------------------------------------------------------

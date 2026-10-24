@@ -115,7 +115,7 @@
         <div class="grid grid-cols-1 xl:grid-cols-3">
 
             {{-- OCR TEXT --}}
-            @if(!Str::contains(strtolower($document->file_type), 'pdf'))
+        
                 <div class="xl:col-span-2 px-8 py-6 xl:border-r border-gray-400">
 
                     <div class="flex items-center gap-2 mb-5">
@@ -128,10 +128,10 @@
                     </div>
 
                 </div>
-            @endif
+
 
             {{-- REVIEW ACTIONS --}}
-            <div class="{{ Str::contains(strtolower($document->file_type), 'pdf') ? 'xl:col-span-3' : '' }} px-8 py-6">
+<div class="px-8 py-6">
 
                 <div class="flex items-center gap-2 mb-1">
                     <span class="flex h-7 w-7 items-center justify-center rounded-full bg-purple-50 text-purple-600 text-sm">⚙️</span>

@@ -43,6 +43,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && a2enmod rewrite headers \
     && rm -rf /var/lib/apt/lists/*
 
+    RUN apt-get update && apt-get install -y libzip-dev unzip \
+    && docker-php-ext-install zip
+
 # Configure Apache to serve Laravel's public directory.
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 
