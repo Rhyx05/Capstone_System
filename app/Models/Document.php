@@ -9,7 +9,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\DocumentLog;
 use App\Models\ElectronicFilingCategory;
 use App\Models\User;
-
+use App\Services\DocumentTextExtractor;
+use Illuminate\Support\Facades\Storage;
 class Document extends Model
 {
     use HasFactory;
@@ -223,6 +224,26 @@ class Document extends Model
 | Submitter
 |--------------------------------------------------------------------------
 */
+
+public function ensureExtractedText(): void
+{
+    if (filled($this->extracted_text) || blank($this->file_path)) {
+        return;
+    }
+
+    $disk = Storage::disk('public');
+
+    if (! $disk->exists($this->file_path)) {
+        return;
+    }
+
+    $this->extracted_text = app(DocumentTextExtractor::class)->extract(
+        $disk->path($this->file_path),
+        pathinfo($this->file_name ?: $this->file_path, PATHINFO_EXTENSION)
+    );
+
+    $this->save();
+}
 
 public function submitter(): BelongsTo
 {

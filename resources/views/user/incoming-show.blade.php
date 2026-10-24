@@ -127,7 +127,7 @@
         <div class="grid grid-cols-1 xl:grid-cols-3">
 
             {{-- OCR TEXT --}}
-            @if(!Str::contains(strtolower($document->file_type), 'pdf'))
+
                 <div class="xl:col-span-2 px-8 py-6 xl:border-r border-gray-100">
 
                     <div class="flex items-center gap-2 mb-5">
@@ -140,10 +140,10 @@
                     </div>
 
                 </div>
-            @endif
+
 
             {{-- RIGHT COLUMN: PROCESSING ACTIONS (or notice) + TIMELINE STACKED (same width) --}}
-            <div class="{{ Str::contains(strtolower($document->file_type), 'pdf') ? 'xl:col-span-3' : '' }} flex flex-col">
+<div class="flex flex-col">
 
                 @if($canProcess)
 

@@ -160,20 +160,9 @@
                     <h2 class="text-base font-semibold text-gray-900">OCR Extracted Text</h2>
                 </div>
 
-                @if($document->file_type == 'pdf')
-
-                    <iframe
-                        src="{{ asset('storage/'.$document->file_path) }}"
-                        class="w-full h-[600px] rounded-xl border border-gray-200">
-                    </iframe>
-
-                @else
-
-                    <div class="rounded-xl border border-gray-200 bg-gray-50 p-6 max-h-[600px] overflow-y-auto whitespace-pre-wrap text-sm text-gray-700 leading-7">
-                        {{ $document->extracted_text ?: 'No extracted text available.' }}
-                    </div>
-
-                @endif
+<div class="rounded-xl border border-gray-200 bg-gray-50 p-6 max-h-[600px] overflow-y-auto whitespace-pre-wrap text-sm text-gray-700 leading-7">
+    {{ $document->extracted_text ?: 'No extracted text available.' }}
+</div>
 
             </div>
 

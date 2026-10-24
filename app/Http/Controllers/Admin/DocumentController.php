@@ -13,6 +13,7 @@ use Illuminate\Support\Str;
 use App\Helpers\AuditLogger;
 use App\Models\ElectronicFilingCategory;
 use App\Helpers\NotificationHelper;
+use App\Services\DocumentTextExtractor;
 
 class DocumentController extends Controller
 {
@@ -28,16 +29,23 @@ public function create()
 /**
  * Handle the admin's own document submission.
  */
-public function store(Request $request)
+public function store(Request $request, DocumentTextExtractor $extractor)
 {
     $request->validate([
         'title'       => ['required', 'string', 'max:150'],
         'category'    => ['required', 'string', 'max:100'],
         'description' => ['nullable', 'string', 'max:1000'],
-        'file'        => ['required', 'file', 'mimes:pdf,jpg,jpeg,png,docx', 'max:10240'], // 10MB max
+        'file'        => ['required', 'file', 'mimes:pdf,docx', 'max:10240'], // 10MB max
     ]);
 
     $uploadedFile = $request->file('file');
+
+    // Extract from the uploaded temp file BEFORE storing it
+    $extractedText = $extractor->extract(
+        $uploadedFile->getRealPath(),
+        $uploadedFile->getClientOriginalExtension()
+    );
+
     $path = $uploadedFile->store('documents', 'public');
 
     $document = Document::create([
@@ -45,6 +53,7 @@ public function store(Request $request)
         'title'           => $request->title,
         'category'        => $request->category,
         'description'     => $request->description,
+        'extracted_text'  => $extractedText,
         'file_name'       => $uploadedFile->getClientOriginalName(),
         'file_path'       => $path,
         'file_type'       => $uploadedFile->getClientMimeType(),
@@ -56,8 +65,6 @@ public function store(Request $request)
     ]);
 
     DocumentLog::create([
-
-    
         'document_id' => $document->id,
         'user_id'     => Auth::id(),
         'action'      => 'Submitted',
@@ -65,10 +72,10 @@ public function store(Request $request)
     ]);
 
     AuditLogger::log(
-    'Documents',
-    'Submitted',
-    'Submitted document: '.$document->title
-);
+        'Documents',
+        'Submitted',
+        'Submitted document: ' . $document->title
+    );
 
     return redirect()->route('admin.documents.index')
         ->with('success', 'Document submitted successfully.');
@@ -469,40 +476,39 @@ public function createForward()
 /**
  * Handle forwarding a document to a designated employee.
  */
-public function storeForward(Request $request)
+public function storeForward(Request $request, DocumentTextExtractor $extractor)
 {
     $request->validate([
         'title'       => ['required', 'string', 'max:150'],
         'category'    => ['required', 'string', 'max:100'],
         'description' => ['nullable', 'string', 'max:1000'],
-        'file'        => ['required', 'file', 'mimes:pdf,jpg,jpeg,png,docx', 'max:10240'],
+        'file'        => ['required', 'file', 'mimes:pdf,docx', 'max:10240'],
         'sent_to'     => ['required', 'exists:users,id'],
     ]);
 
     $uploadedFile = $request->file('file');
+
+    // Extract from the uploaded temp file BEFORE storing it
+    $extractedText = $extractor->extract(
+        $uploadedFile->getRealPath(),
+        $uploadedFile->getClientOriginalExtension()
+    );
+
     $path = $uploadedFile->store('documents', 'public');
 
     // Receiver employee
-    $receiver = User::findOrFail($request->sent_to);
+    $receiver = User::with('office')->findOrFail($request->sent_to);
 
     $document = Document::create([
-
         'tracking_code'      => strtoupper(Str::random(8)),
-
         'title'              => $request->title,
-
         'category'           => $request->category,
-
         'description'        => $request->description,
-
+        'extracted_text'     => $extractedText,
         'file_name'          => $uploadedFile->getClientOriginalName(),
-
         'file_path'          => $path,
-
         'file_type'          => $uploadedFile->getClientMimeType(),
-
         'file_size'          => $uploadedFile->getSize(),
-
         'submitted_by'       => Auth::id(),
 
         // Admin has no office
@@ -510,90 +516,47 @@ public function storeForward(Request $request)
 
         // Destination
         'receiver_office_id' => $receiver->office_id,
-
         'assigned_to'        => $receiver->id,
-
         'sent_to'            => $receiver->id,
-
         'assigned_at'        => now(),
 
         'status'             => 'assigned',
-
         'submission_date'    => now(),
-
     ]);
 
     DocumentLog::create([
-
         'document_id' => $document->id,
-
         'user_id'     => Auth::id(),
-
         'action'      => 'Forwarded',
-
         'remarks'     =>
             'Administrator forwarded this document to ' .
             $receiver->full_name .
-            ' (' . $receiver->office->office_name . ').',
-
+            ' (' . optional($receiver->office)->office_name . ').',
     ]);
 
     AuditLogger::log(
-
         'Documents',
-
         'Forwarded',
-
         Auth::user()->full_name .
         ' forwarded "' .
         $document->title .
         '" to ' .
         $receiver->full_name .
         ' (' .
-        $receiver->office->office_name .
+        optional($receiver->office)->office_name .
         ').'
-
     );
 
     NotificationHelper::notifyUser(
-
-    $receiver,
-
-    'New Document Assigned',
-
-    'Administrator forwarded "' .
-    $document->title .
-    '" to you.',
-
-    'assigned',
-
-    $document
-
-);
+        $receiver,
+        'New Document Assigned',
+        'Administrator forwarded "' . $document->title . '" to you.',
+        'assigned',
+        $document
+    );
 
     return redirect()
         ->route('admin.submit')
-        ->with(
-            'success',
-            'Document forwarded successfully.'
-        );
+        ->with('success', 'Document forwarded successfully.');
 }
-
-public function archive(Request $request, Document $document)
-{
-    $request->validate([
-        'filing_category_id' => 'required|exists:electronic_filing_categories,id',
-    ]);
-
-    $document->update([
-        'filing_category_id' => $request->filing_category_id,
-        'archived_at' => now(),
-        'status' => 'archived',
-    ]);
-
-    return redirect()
-        ->route('admin.filing.index')
-        ->with('success', 'Document archived successfully.');
-}
-
 }

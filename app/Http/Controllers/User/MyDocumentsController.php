@@ -148,6 +148,8 @@ class MyDocumentsController extends Controller
             'logs.user',
         ]);
 
+        $document->ensureExtractedText();
+        
         return view('user.document-details', compact('document'));
     }
 }
